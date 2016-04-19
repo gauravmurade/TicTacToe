@@ -1812,5 +1812,6 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
         move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
 
         /**Hand Over */
+
     }
 }

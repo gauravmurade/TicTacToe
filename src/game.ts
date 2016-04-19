@@ -33,7 +33,7 @@ module game {
   let yourPlayerCards_card2: Card;
   export let class_yourPlayerCards_card1: string;
   export let class_yourPlayerCards_card2: string;
-   
+    
   export function init() {
     translate.setTranslations(getTranslations());
     translate.setLanguage('en');
@@ -45,6 +45,7 @@ module game {
       checkMoveOk: gameLogic.checkMoveOk,
       updateUI: updateUI
     });
+
     // See http://www.sitepoint.com/css3-animation-javascript-event-handlers/
     document.addEventListener("animationend", animationEndedCallback, false); // standard
     document.addEventListener("webkitAnimationEnd", animationEndedCallback, false); // WebKit
