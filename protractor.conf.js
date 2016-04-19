@@ -1,6 +1,5 @@
 exports.config = {
-//  specs: ['ts_output_readonly_do_NOT_change_manually/src/end_to_end_tests.js'],
-  specs: [],
+  specs: ['ts_output_readonly_do_NOT_change_manually/src/end_to_end_tests.js'],
   allScriptsTimeout: 11000,
   // TODO: test Safari&Chrome incognito and offline mode.
   multiCapabilities: [{
