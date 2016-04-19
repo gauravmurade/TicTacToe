@@ -186,6 +186,7 @@ module.exports = function(grunt) {
           network: [
             'js/everything.min.js.map',
             'js/everything.js',
+            'css/faces/*',
           ],
           timestamp: true
         },
