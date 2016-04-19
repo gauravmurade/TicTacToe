@@ -90,7 +90,6 @@ module.exports = function(grunt) {
   }
   commands.push('rm -rf ' + output_directory + '/temp');
   var auto_resize_images_command = commands.join(" && ");
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     shell: {

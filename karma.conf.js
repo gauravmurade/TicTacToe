@@ -2,7 +2,7 @@ module.exports = function(config) {
   config.set({
 
     basePath : './',
-
+ 
     files : [
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js',
       'ts_output_readonly_do_NOT_change_manually/src/gameLogic.js',

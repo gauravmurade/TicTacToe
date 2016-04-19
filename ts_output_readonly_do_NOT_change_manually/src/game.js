@@ -10,6 +10,16 @@ var game;
     game.move = null;
     game.state = null;
     game.isHelpModalShown = false;
+    //the flags to show buttons or not
+    // let shouldShowSmallBlind = true;
+    // let shouldShowBigBlind =false;
+    // let shouldShowAllIn = false;
+    // let shouldShowRaise =false;
+    // let shouldShowCall =false;
+    // let shouldShowCheck=false;
+    //used to animate the opening of cards on the table
+    //updated each time cellClicked is called, but before the move is sent  
+    game.oldOpenCardsSize = 0;
     var yourPlayerCards_card1;
     var yourPlayerCards_card2;
     function init() {
@@ -85,7 +95,6 @@ var game;
             game.state = gameLogic.getInitialState();
         }
         console.log(params, game.state);
-        ///Ridhiman ask adit what the turIndexAfterMve is at the end of the game!!!
         game.canMakeMove = game.move.turnIndexAfterMove >= 0 &&
             params.yourPlayerIndex === game.move.turnIndexAfterMove; // it's my turn
         console.log("canMakeMove: " + game.canMakeMove + " params.yourPlayerIndex: " + params.yourPlayerIndex + "move.turnIndexAfterMove: " + game.move.turnIndexAfterMove
@@ -99,6 +108,7 @@ var game;
             yourPlayerCards_card2 = game.state.table.playerList[params.yourPlayerIndex].cards[1];
             game.class_yourPlayerCards_card1 = getCardClass(yourPlayerCards_card1);
             game.class_yourPlayerCards_card2 = getCardClass(yourPlayerCards_card2);
+            // getPlayerOptions();
             console.log("cardsClass YPI" + game.class_yourPlayerCards_card1 + " " + game.class_yourPlayerCards_card2);
         }
         /*************************************************************************/
@@ -120,28 +130,6 @@ var game;
         }
         console.log("state at end of updateUI", game.state);
     }
-    //Ridhiman: u might only have to cahneg this function to take the button that is clicked
-    /* export function cellClicked(row: number, col: number): void {
-       log.info("Clicked on cell:", row, col);
-       if (window.location.search === '?throwException') { // to test encoding a stack trace with sourcemap
-         throw new Error("Throwing the error because URL has '?throwException'");
-       }
-       if (!canMakeMove) {
-         return;
-       }
-       try {
-         let nextMove = gameLogic.createMove(
-             state, row, col, move.turnIndexAfterMove);
-         canMakeMove = false; // to prevent making another move
-         moveService.makeMove(nextMove);
-       } catch (e) {
-         log.info(["Cell is already full in position:", row, col]);
-         return;
-       }
-     }
-     
-     */
-    //Added by Ridhiman
     function cellClicked(action, amountRaised) {
         log.info("Clicked on button:", action, " amountRaised: ", amountRaised);
         if (window.location.search === '?throwException') {
@@ -153,6 +141,17 @@ var game;
         }
         try {
             console.log("cellClicked STATE BEFORE MAKE MOVE: ", game.state);
+            //if small blind is not yet set, set it and remove the button from the dispaly
+            //to remove the button, i use  shouldShowSmallBlind
+            // if((action  === 'Small') && (shouldShowSmallBlind == true)){
+            //     shouldShowSmallBlind = false;
+            //     shouldShowBigBlind = true;
+            // }
+            // if((action  === 'Big') && (shouldShowBigBlind == true)){
+            //     shouldShowBigBlind = false;
+            // }
+            //update the closedCards size
+            game.oldOpenCardsSize = game.state.table.openedCards.length;
             game.state.table.playerList[game.temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
             console.log("Move Before call :", game.move);
             var nextMove = gameLogic.createMove(game.state, null, amountRaised, game.move.turnIndexAfterMove);
@@ -180,14 +179,32 @@ var game;
     
       export function isPieceO(row: number, col: number): boolean {
         return state.board[row][col] === 'O';
-      }
-    
-      export function shouldSlowlyAppear(row: number, col: number): boolean {
-        return !animationEnded &&
-            state.delta &&
-            state.delta.row === row && state.delta.col === col;
       }*/
+    //  export function shouldSlowlyAppear(row: number, col: number): boolean {
+    //    return !animationEnded &&
+    //        state.delta &&
+    //        state.delta.row === row && state.delta.col === col;
+    //  }
     /********RIDHIMAN ADDED*****/
+    function getPlayerOptions() {
+        /**supposed to reset theflags basedon function calls made in game logic,
+         * has to call functions in game logic ti check thing slike the pot anmd all
+         * and decide the options it can show to the user
+         */
+    }
+    //  function showWinners(params: IUpdateUI){
+    //      //set the flag to show a different div which shows the player's cards, and the winning hands
+    //       console.log("should show winners");
+    //       setTimeout(function() {
+    //           console.log();
+    //            shouldShowSmallBlind = true;
+    //            game.state.table.winners = null;
+    //            params.stateBeforeMove.table.winners = null;
+    //            console.log();
+    //            updateUI(params);
+    //            alert("time out done, should have shown winners");
+    //       },9000);
+    //      }
     function getPlayerStateBasedOnAction(action) {
         switch (action) {
             case "Raise": return PlayerState.Raise;
@@ -263,6 +280,19 @@ var game;
         }
     }
     game.getCardRank = getCardRank;
+    function shouldShowButton(action) {
+        switch (action) {
+            case "Raise": return true; //for now returning true, check function again
+            case "Fold": return gameLogic.canFoldOrNot(game.state.table);
+            case "Call": return gameLogic.canCallOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
+            case "AllIn": return gameLogic.canAllInOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
+            case "Check": return gameLogic.canCheckOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
+            case "Small": return gameLogic.canSmallBlindOrNot(game.state.table);
+            case "Big": return gameLogic.canBigBlindOrNot(game.state.table);
+            default: return true;
+        }
+    }
+    game.shouldShowButton = shouldShowButton;
     /***************************/
     function clickedOnModal(evt) {
         if (evt.target === evt.currentTarget) {

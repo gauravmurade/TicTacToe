@@ -29,7 +29,7 @@
         "insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
         "placeOpenBraceOnNewLineForFunctions": false,
         "placeOpenBraceOnNewLineForControlBlocks": false
-    },
+    }, 
     "files": [
         "src/aiService.ts",
         "src/aiService_test.ts",
