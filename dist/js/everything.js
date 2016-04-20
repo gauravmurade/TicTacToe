@@ -147,7 +147,7 @@ var TableSetup = (function () {
         this.deck = [];
         this.openedCards = [];
         this.closedCards = [];
-        this.dealerIndex = 4;
+        this.dealerIndex = noOfPlayers - 1;
         this.currentPlayerIndex = 0;
         this.roundStartIndex = 0;
         this.potArray = [];
@@ -1580,7 +1580,7 @@ var game;
     function getTranslations() {
         return {
             RULES_OF_TICTACTOE: {
-                en: "Rules of TicTacToe",
+                en: "Rules of Poker",
                 iw: "חוקי המשחק",
             },
             RULES_SLIDE1: {
@@ -1811,16 +1811,17 @@ var game;
     game.getCardRank = getCardRank;
     function shouldShowButton(action) {
         return true;
-        switch (action) {
-            case "Raise": return true; //for now returning true, check function again
-            case "Fold": return gameLogic.canFoldOrNot(game.state.table);
-            case "Call": return gameLogic.canCallOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
-            case "AllIn": return gameLogic.canAllInOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
-            case "Check": return gameLogic.canCheckOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
-            case "Small": return gameLogic.canSmallBlindOrNot(game.state.table);
-            case "Big": return gameLogic.canBigBlindOrNot(game.state.table);
-            default: return true;
-        }
+        /*
+                 switch(action){
+                  case "Raise" :return true;//for now returning true, check function again
+                  case "Fold"  :return gameLogic.canFoldOrNot(state.table);
+                  case "Call"  :return gameLogic.canCallOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
+                  case "AllIn" :return gameLogic.canAllInOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
+                  case "Check" :return gameLogic.canCheckOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
+                  case "Small" :return gameLogic.canSmallBlindOrNot(state.table);
+                  case "Big"   :return gameLogic.canBigBlindOrNot(state.table);
+                  default:  return true;
+        */
     }
     game.shouldShowButton = shouldShowButton;
     /***************************/
@@ -1841,55 +1842,4 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
 });
 //# sourceMappingURL=game.js.map
 ;
-var aiService;
-(function (aiService) {
-    /** Returns the move that the computer player should do for the given state in move. */
-    function findComputerMove(move) {
-        return createComputerMove(move, 
-        // at most 1 second for the AI to choose a move (but might be much quicker)
-        { millisecondsLimit: 1000 });
-    }
-    aiService.findComputerMove = findComputerMove;
-    /**
-     * Returns all the possible moves for the given state and turnIndexBeforeMove.
-     * Returns an empty array if the game is over.
-     */
-    function getPossibleMoves(state, turnIndexBeforeMove) {
-        var possibleMoves = [];
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                try {
-                    possibleMoves.push(gameLogic.createMove(state, i, j, turnIndexBeforeMove));
-                }
-                catch (e) {
-                }
-            }
-        }
-        return possibleMoves;
-    }
-    aiService.getPossibleMoves = getPossibleMoves;
-    /**
-     * Returns the move that the computer player should do for the given state.
-     * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
-     * and it has either a millisecondsLimit or maxDepth field:
-     * millisecondsLimit is a time limit, and maxDepth is a depth limit.
-     */
-    function createComputerMove(move, alphaBetaLimits) {
-        // We use alpha-beta search, where the search states are TicTacToe moves.
-        return alphaBetaService.alphaBetaDecision(move, move.turnIndexAfterMove, getNextStates, getStateScoreForIndex0, null, alphaBetaLimits);
-    }
-    aiService.createComputerMove = createComputerMove;
-    function getStateScoreForIndex0(move, playerIndex) {
-        var endMatchScores = move.endMatchScores;
-        if (endMatchScores) {
-            return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-                : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-                    : 0;
-        }
-        return 0;
-    }
-    function getNextStates(move, playerIndex) {
-        return getPossibleMoves(move.stateAfterMove, playerIndex);
-    }
-})(aiService || (aiService = {}));
 //# sourceMappingURL=aiService.js.map

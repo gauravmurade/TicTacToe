@@ -65,7 +65,7 @@ module game {
   function getTranslations(): Translations {
     return {
       RULES_OF_TICTACTOE: {
-        en: "Rules of TicTacToe",
+        en: "Rules of Poker",
         iw: "חוקי המשחק",
       },
       RULES_SLIDE1: {
@@ -312,6 +312,7 @@ module game {
     
     export function shouldShowButton(action: string): boolean{
          return true;
+/*
          switch(action){
           case "Raise" :return true;//for now returning true, check function again
           case "Fold"  :return gameLogic.canFoldOrNot(state.table);
@@ -321,8 +322,8 @@ module game {
           case "Small" :return gameLogic.canSmallBlindOrNot(state.table);
           case "Big"   :return gameLogic.canBigBlindOrNot(state.table);
           default:  return true;
+*/
         }
-    }
   /***************************/
   export function clickedOnModal(evt: Event) {
     if (evt.target === evt.currentTarget) {

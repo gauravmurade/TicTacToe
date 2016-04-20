@@ -189,7 +189,7 @@ class TableSetup {
 		this.deck = [];
 		this.openedCards = [];
 		this.closedCards = [];
-		this.dealerIndex = 4;
+		this.dealerIndex = noOfPlayers-1;
 		this.currentPlayerIndex = 0;
 		this.roundStartIndex = 0;
 		this.potArray = [];
@@ -251,7 +251,7 @@ class TableSetup {
     getCumulativePotAmount() {
         let cumulativePotAmount: number = 0;
         
-        for(let i: number = 0 ; i<this.potArray.length; i++) {
+        for(let i: number = 0 ; i < this.potArray.length; i++) {
             cumulativePotAmount += this.potArray[i].totalAmount;
         }
         
@@ -473,7 +473,7 @@ function initializeTableDeck() : Card[] {
             suiteNumber++;
         }
     }
-
+ 
     // //Shuffle the Deck.
     // for (let i : number = cardDeck.length - 1; i > 0; i--) {
     //     let j : number = Math.floor(Math.random() * (i + 1));

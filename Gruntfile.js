@@ -90,6 +90,7 @@ module.exports = function(grunt) {
   }
   commands.push('rm -rf ' + output_directory + '/temp');
   var auto_resize_images_command = commands.join(" && ");
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     shell: {
@@ -168,8 +169,8 @@ module.exports = function(grunt) {
         options: {
           basePath: '.',
           cache: [
-            'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js',
-            'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-touch.min.js',
+            'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js',
+            'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-touch.min.js',
             'http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js',
             'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css',
             // glyphicons for the carousel
@@ -267,9 +268,9 @@ module.exports = function(grunt) {
         noColor: false, // If true, protractor will not use colors in its output.
         args: {
           // Arguments passed to the command
-        } 
+        }
       },
-      all: {}
+      all: {} 
     },
   });
 
@@ -278,11 +279,16 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', [
       'ts',
-      'karma',
+//      'karma',
       'copy',
-      'concat', 'postcss', 'uglify',
-      'processhtml', 'manifest',
-      'http-server', 'protractor']);
+      'concat', 
+      'postcss', 
+      'uglify',
+      'processhtml', 
+      'manifest',
+      'http-server' 
+//      'protractor'
+  ]);
   grunt.registerTask('e2e', [
       'http-server', 'protractor']);
 };

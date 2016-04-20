@@ -322,7 +322,7 @@ td {
 }
 .card.diamonds.rank13 .face {
   background-image: url("faces/3_13.svg");
-}
+} 
 .card.joker.rank1 .face {
   background-image: url("faces/4_1.svg");
 }

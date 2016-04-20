@@ -51,7 +51,7 @@ var game;
     function getTranslations() {
         return {
             RULES_OF_TICTACTOE: {
-                en: "Rules of TicTacToe",
+                en: "Rules of Poker",
                 iw: "חוקי המשחק",
             },
             RULES_SLIDE1: {
@@ -282,16 +282,17 @@ var game;
     game.getCardRank = getCardRank;
     function shouldShowButton(action) {
         return true;
-        switch (action) {
-            case "Raise": return true; //for now returning true, check function again
-            case "Fold": return gameLogic.canFoldOrNot(game.state.table);
-            case "Call": return gameLogic.canCallOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
-            case "AllIn": return gameLogic.canAllInOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
-            case "Check": return gameLogic.canCheckOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
-            case "Small": return gameLogic.canSmallBlindOrNot(game.state.table);
-            case "Big": return gameLogic.canBigBlindOrNot(game.state.table);
-            default: return true;
-        }
+        /*
+                 switch(action){
+                  case "Raise" :return true;//for now returning true, check function again
+                  case "Fold"  :return gameLogic.canFoldOrNot(state.table);
+                  case "Call"  :return gameLogic.canCallOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
+                  case "AllIn" :return gameLogic.canAllInOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
+                  case "Check" :return gameLogic.canCheckOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
+                  case "Small" :return gameLogic.canSmallBlindOrNot(state.table);
+                  case "Big"   :return gameLogic.canBigBlindOrNot(state.table);
+                  default:  return true;
+        */
     }
     game.shouldShowButton = shouldShowButton;
     /***************************/
