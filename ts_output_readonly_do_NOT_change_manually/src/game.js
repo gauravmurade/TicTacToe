@@ -28,8 +28,8 @@ var game;
         log.log("Translation of 'RULES_OF_TICTACTOE' is " + translate('RULES_OF_TICTACTOE'));
         resizeGameAreaService.setWidthToHeight(1);
         moveService.setGame({
-            minNumberOfPlayers: 5,
-            maxNumberOfPlayers: 5,
+            minNumberOfPlayers: 2,
+            maxNumberOfPlayers: 2,
             checkMoveOk: gameLogic.checkMoveOk,
             updateUI: updateUI
         });
@@ -92,7 +92,7 @@ var game;
         game.state = game.move.stateAfterMove;
         if (!game.state) {
             console.log("Calling updateUI");
-            game.state = gameLogic.getInitialState();
+            game.state = gameLogic.getInitialState(params.playersInfo);
         }
         console.log(params, game.state);
         game.canMakeMove = game.move.turnIndexAfterMove >= 0 &&
@@ -281,6 +281,7 @@ var game;
     }
     game.getCardRank = getCardRank;
     function shouldShowButton(action) {
+        return true;
         switch (action) {
             case "Raise": return true; //for now returning true, check function again
             case "Fold": return gameLogic.canFoldOrNot(game.state.table);

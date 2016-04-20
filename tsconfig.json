@@ -30,7 +30,7 @@
         "placeOpenBraceOnNewLineForFunctions": false,
         "placeOpenBraceOnNewLineForControlBlocks": false
     }, 
-    "files": [
+    "files": [ 
         "src/aiService.ts",
         "src/aiService_test.ts",
         "src/end_to_end_tests.ts",

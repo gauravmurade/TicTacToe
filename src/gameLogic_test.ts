@@ -641,7 +641,7 @@ describe("In Poker", function() {
     let player1 = new Player("adit91","Adit");
     player1.state = PlayerState.Check;
     player1.chipsInPocket = 400;
-    player1.currentBet = 100;
+    player1.currentBet = 100; 
     player1.cards.push(new Card("2", CardSuite.s));
     player1.cards.push(new Card("2", CardSuite.h));
 

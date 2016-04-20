@@ -40,8 +40,8 @@ module game {
     log.log("Translation of 'RULES_OF_TICTACTOE' is " + translate('RULES_OF_TICTACTOE'));
     resizeGameAreaService.setWidthToHeight(1);
     moveService.setGame({
-      minNumberOfPlayers: 5,//!!Ridhiman: change these values later 
-      maxNumberOfPlayers: 5,
+      minNumberOfPlayers: 2,//!!Ridhiman: change these values later 
+      maxNumberOfPlayers: 2,
       checkMoveOk: gameLogic.checkMoveOk,
       updateUI: updateUI
     });
@@ -104,11 +104,11 @@ module game {
   function updateUI(params: IUpdateUI): void {
     log.info("Game got updateUI:", params);
     animationEnded = false;
-    move = params.move;
+    move = params.move; 
     state = move.stateAfterMove;
     if (!state) {
       console.log("Calling updateUI");
-      state = gameLogic.getInitialState();
+      state = gameLogic.getInitialState(params.playersInfo);
     }
     console.log(params , state);    
     canMakeMove = move.turnIndexAfterMove >= 0 && // game is ongoing
@@ -311,6 +311,7 @@ module game {
     }
     
     export function shouldShowButton(action: string): boolean{
+         return true;
          switch(action){
           case "Raise" :return true;//for now returning true, check function again
           case "Fold"  :return gameLogic.canFoldOrNot(state.table);

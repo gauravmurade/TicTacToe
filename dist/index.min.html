@@ -34,7 +34,7 @@
   <div 
     style="position:absolute; top:0%; left:0; width:100%; height:30%;">
     <!-- add an ng if to this div to display info that is not about the current player only-->
-    <div ng-repeat = "row in [0,1,2,3,4]" 
+    <div ng-repeat = "row in [0,1]" 
         style="position:absolute; top:0; left:{{row * 20}}%; width:20%; height:100%; font-size: 1vmax; 
         {{(row == game.temp_yourPlayerIndex)? 'color: red;' : 'color: white' }}" >
 		<div ng-if = "game.state.table.playerList.length >= row">{{game.state.table.playerList[row].id}}</div>

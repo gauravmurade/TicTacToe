@@ -8,7 +8,7 @@ exports.config = {
     'chromeOptions': {
       // iPhone4 size (320x480) is the smallest size we support.
       "mobileEmulation": { "deviceName": "Apple iPhone 4" },
-    }, 
+    },  
   }],
   baseUrl: 'http://localhost:9000/',
   framework: 'jasmine',

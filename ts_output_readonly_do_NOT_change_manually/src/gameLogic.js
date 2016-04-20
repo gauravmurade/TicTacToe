@@ -411,14 +411,19 @@ var gameLogic;
 (function (gameLogic) {
     var hands = ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-"];
     var handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
-    var noOfPlayers = 5;
-    function getInitialTable() {
+    var noOfPlayers = 2;
+    function getInitialTable(playersInfo) {
         var table = new TableSetup(noOfPlayers);
-        table.addPlayerToTheTable(new Player("adit91", "Adit"));
-        table.addPlayerToTheTable(new Player("ridhi91", "Ridhi"));
-        table.addPlayerToTheTable(new Player("anto90", "Anto"));
-        table.addPlayerToTheTable(new Player("gaurav89", "Gaurav"));
-        table.addPlayerToTheTable(new Player("rachita88", "Rachita"));
+        for (var i = 0; i < playersInfo.length; i++) {
+            table.addPlayerToTheTable(new Player(playersInfo[i].playerId, playersInfo[i].displayName));
+        }
+        /*
+                table.addPlayerToTheTable(new Player("adit91","Adit"));
+                table.addPlayerToTheTable(new Player("ridhi91","Ridhi"));
+                table.addPlayerToTheTable(new Player("anto90","Anto"));
+                table.addPlayerToTheTable(new Player("gaurav89","Gaurav"));
+                table.addPlayerToTheTable(new Player("rachita88","Rachita"));
+        */
         table.potArray[table.getCurrentPotIndex()].addAllPlayersToThePot(table.playerList);
         table.deck = initializeTableDeck();
         distributeCards(table);
@@ -426,13 +431,26 @@ var gameLogic;
         return table;
     }
     gameLogic.getInitialTable = getInitialTable;
-    function getInitialState() {
-        return { table: getInitialTable(), delta: null };
+    function getInitialState(playersInfo) {
+        return { table: getInitialTable(playersInfo), delta: null };
     }
     gameLogic.getInitialState = getInitialState;
     function createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove) {
         if (!stateBeforeMove) {
-            stateBeforeMove = getInitialState();
+            var playersInfo = [];
+            var player1 = {
+                displayName: "Adit",
+                playerId: "A",
+                avatarImageUrl: null
+            };
+            var player2 = {
+                displayName: "Ridhiman",
+                playerId: "R",
+                avatarImageUrl: null
+            };
+            playersInfo.push(player1);
+            playersInfo.push(player2);
+            stateBeforeMove = getInitialState(playersInfo);
         }
         var lastCardOfTheRound = false;
         var handOver = false;
@@ -836,7 +854,6 @@ var gameLogic;
         var amountAdded = deltaValue.amountAdded;
         var expectedMove = createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove);
         if (!angular.equals(move, expectedMove)) {
-            throw new Error("Expected move=" + angular.toJson(expectedMove, true) + ", but got stateTransition=" + angular.toJson(stateTransition, true));
         }
     }
     gameLogic.checkMoveOk = checkMoveOk;
