@@ -585,9 +585,10 @@ module gameLogic {
         currentPlayer = tableAfterMove.playerList[tableAfterMove.currentPlayerIndex];
         
         let tempCurrentPlayer : Player = currentPlayer;
-        console.log("Printing tableAfterMove" + tableAfterMove);
-        
-        if(tableAfterMove.openedCards.length == 0) { 
+        console.log("Printing tableAfterMove");
+        console.log(tableAfterMove);
+         
+        if(tableAfterMove.openedCards.length == 0) {
             
             if( (tableAfterMove.currentPlayerIndex == ( (tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length) ) && 
                 (currentPlayer.state == PlayerState.Init) ) {

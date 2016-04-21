@@ -456,7 +456,8 @@ var gameLogic;
         var tableAfterMove = angular.copy(table);
         currentPlayer = tableAfterMove.playerList[tableAfterMove.currentPlayerIndex];
         var tempCurrentPlayer = currentPlayer;
-        console.log("Printing tableAfterMove" + tableAfterMove);
+        console.log("Printing tableAfterMove");
+        console.log(tableAfterMove);
         if (tableAfterMove.openedCards.length == 0) {
             if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
