@@ -180,8 +180,6 @@ module game {
       state.table.playerList[temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
       console.log("Move Before call :",move);
       let nextMove = gameLogic.createMove(state, null, amountRaised, move.turnIndexAfterMove);
-      console.log("Print mother fucking nextmove: ");
-      console.log(nextMove);
       canMakeMove = false; // to prevent making another move
       moveService.makeMove(nextMove);
       console.log("cellClicked STATE AFTER MAKE MOVE: ");
