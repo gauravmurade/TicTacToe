@@ -399,18 +399,6 @@ class TableSetup {
     }
 }
 
-
-type Table = TableSetup;
-interface TableDelta {
-  currentPlayer : Player;
-  amountAdded : number;
-}
-
-interface IState {
-  table: Table;
-  delta: TableDelta;
-}
-
 function initializeTableDeck() : Card[] {
         
   	let cardDeck : Card[] = [];
@@ -516,21 +504,30 @@ function printCardDeck(cardDeck : Card[]) {
     }
 }
 
-function isGameOver(table: Table): boolean {
-	if((table.playerList.length == 0) || (table.playerList.length == 1))  {
-		return true;
-	}
-	else {
-		return false;
-	}
+type Table = TableSetup;
+interface TableDelta {
+  currentPlayer : Player;
+  amountAdded : number;
+}
+
+interface IState {
+  table: Table;
+  delta: TableDelta;
 }
 
 module gameLogic {
-    let hands: string[] =  ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-" ]; 
- 	let handRanks: number[] = [8,9,5,6,1,2,3,10,4,7,0];
-    let noOfPlayers: number = 2;
+
+    function isGameOver(table: Table): boolean {
+        if((table.playerList.length == 0) || (table.playerList.length == 1))  {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
   
-    export function getInitialTable(playersInfo: IPlayerInfo[]): Table {
+     function getInitialTable(playersInfo: IPlayerInfo[]): Table {
+        let noOfPlayers: number = 2;
         let table : Table = new TableSetup(noOfPlayers);
 
        for(let i: number = 0; i< playersInfo.length; i++) {
@@ -1161,6 +1158,7 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
     export function rankHand(str: string) :winningScoreAndCards {
         
         //takes a string of per person hands and returns the rank as a number
+     	let handRanks: number[] = [8,9,5,6,1,2,3,10,4,7,0];
         let index: number = 10;//index into handRanks
         let winCardIndexes:number, i:number;
         let wci: number[] = [];
