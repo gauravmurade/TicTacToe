@@ -101,7 +101,7 @@ module game {
   // moveService.makeMove(aiService.findComputerMove(move));
   }
 
-  function updateUI(params: IUpdateUI): void {
+  function updateUI(params: IUpdateUI): void { 
     log.info("Game got updateUI:", params);
     animationEnded = false;
     move = params.move; 

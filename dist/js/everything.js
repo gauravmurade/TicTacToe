@@ -456,9 +456,12 @@ var gameLogic;
         var tableAfterMove = angular.copy(table);
         currentPlayer = tableAfterMove.playerList[tableAfterMove.currentPlayerIndex];
         var tempCurrentPlayer = currentPlayer;
+        console.log("Printing tableAfterMove" + tableAfterMove);
         if (tableAfterMove.openedCards.length == 0) {
             if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
+                console.log("Playing small blind" + typeof (tableAfterMove));
+                console.log("Playing small blind" + typeof (tableAfterMove.getCurrentPotIndex()));
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.smallBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.smallBlind;
                 currentPlayer.currentBet = tableAfterMove.smallBlind;
@@ -468,6 +471,8 @@ var gameLogic;
             }
             else if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 2) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
+                console.log("Playing large blind" + typeof (tableAfterMove));
+                console.log("Playing large blind" + typeof (tableAfterMove.getCurrentPotIndex()));
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.bigBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.bigBlind;
                 currentPlayer.currentBet = tableAfterMove.bigBlind;
