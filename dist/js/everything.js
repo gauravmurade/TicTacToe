@@ -397,20 +397,18 @@ function printCardDeck(cardDeck) {
     for (var i = 0; i < cardDeck.length; i++) {
     }
 }
-function isGameOver(table) {
-    if ((table.playerList.length == 0) || (table.playerList.length == 1)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 var gameLogic;
 (function (gameLogic) {
-    var hands = ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-"];
-    var handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
-    var noOfPlayers = 2;
+    function isGameOver(table) {
+        if ((table.playerList.length == 0) || (table.playerList.length == 1)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     function getInitialTable(playersInfo) {
+        var noOfPlayers = 2;
         var table = new TableSetup(noOfPlayers);
         for (var i = 0; i < playersInfo.length; i++) {
             table.addPlayerToTheTable(new Player(playersInfo[i].playerId, playersInfo[i].displayName));
@@ -428,7 +426,6 @@ var gameLogic;
         //        console.log(table);
         return table;
     }
-    gameLogic.getInitialTable = getInitialTable;
     function getInitialState(playersInfo) {
         return { table: getInitialTable(playersInfo), delta: null };
     }
@@ -943,6 +940,7 @@ var gameLogic;
     gameLogic.canAllInOrNot = canAllInOrNot;
     function rankHand(str) {
         //takes a string of per person hands and returns the rank as a number
+        var handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
         var index = 10; //index into handRanks
         var winCardIndexes, i;
         var wci = [];
