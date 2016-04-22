@@ -4,7 +4,7 @@
 // a player has left the table. small blind getting set correctly?
 describe("In Poker", function () {
     //   let OK = true;
-    //   let ILLEGAL = false;
+    //   let ILLEGAL = false; 
     //   let P1_TURN = 0;
     //   let P2_TURN = 1;
     //   let P3_TURN = 2;
@@ -3986,103 +3986,6 @@ describe("In Poker", function () {
     //     tableAfterMove.bigBlind = 20;
     //     tableAfterMove.currentCallAmount = 0;
     //     expectMove(OK, P2_TURN, tableBeforeMove, player2, 0, tableAfterMove, NO_ONE_TURN, P1_WIN_SCORES);
-    //   });
-    //   it("placing X in 0x0 from initial state but setting the turn to yourself is illegal", function() {
-    //     expectMove(ILLEGAL, X_TURN, null, 0, 0,
-    //       [['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], X_TURN, NO_ONE_WINS);
-    //   });
-    //   it("placing X in 0x0 from initial state and winning is illegal", function() {
-    //     expectMove(ILLEGAL, X_TURN, null, 0, 0,
-    //       [['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], NO_ONE_TURN, X_WIN_SCORES);
-    //   });
-    //   it("placing X in 0x0 from initial state and setting the wrong board is illegal", function() {
-    //     expectMove(ILLEGAL, X_TURN, null, 0, 0,
-    //       [['X', 'X', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], O_TURN, NO_ONE_WINS);
-    //   });
-    //   it("placing O in 0x1 after X placed X in 0x0 is legal", function() {
-    //     expectMove(OK, O_TURN,
-    //       [['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], 0, 1,
-    //       [['X', 'O', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], X_TURN, NO_ONE_WINS);
-    //   });
-    //   it("placing an O in a non-empty position is illegal", function() {
-    //     expectMove(ILLEGAL, O_TURN,
-    //       [['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], 0, 0,
-    //       [['O', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], X_TURN, NO_ONE_WINS);
-    //   });
-    //   it("cannot move after the game is over", function() {
-    //     expectMove(ILLEGAL, O_TURN,
-    //       [['X', 'O', ''],
-    //        ['X', 'O', ''],
-    //        ['X', '', '']], 2, 1,
-    //       [['X', 'O', ''],
-    //        ['X', 'O', ''],
-    //        ['X', 'O', '']], X_TURN, NO_ONE_WINS);
-    //   });
-    //   it("placing O in 2x1 is legal", function() {
-    //     expectMove(OK, O_TURN,
-    //       [['O', 'X', ''],
-    //        ['X', 'O', ''],
-    //        ['X', '', '']], 2, 1,
-    //       [['O', 'X', ''],
-    //        ['X', 'O', ''],
-    //        ['X', 'O', '']], X_TURN, NO_ONE_WINS);
-    //   });
-    //   it("X wins by placing X in 2x0 is legal", function() {
-    //     expectMove(OK, X_TURN,
-    //       [['X', 'O', ''],
-    //        ['X', 'O', ''],
-    //        ['', '', '']], 2, 0,
-    //       [['X', 'O', ''],
-    //        ['X', 'O', ''],
-    //        ['X', '', '']], NO_ONE_TURN, X_WIN_SCORES);
-    //   });
-    //   it("O wins by placing O in 1x1 is legal", function() {
-    //     expectMove(OK, O_TURN,
-    //       [['X', 'X', 'O'],
-    //        ['X', '', ''],
-    //        ['O', '', '']], 1, 1,
-    //       [['X', 'X', 'O'],
-    //        ['X', 'O', ''],
-    //        ['O', '', '']], NO_ONE_TURN, O_WIN_SCORES);
-    //   });
-    //   it("the game ties when there are no more empty cells", function() {
-    //     expectMove(OK, X_TURN,
-    //       [['X', 'O', 'X'],
-    //        ['X', 'O', 'O'],
-    //        ['O', 'X', '']], 2, 2,
-    //       [['X', 'O', 'X'],
-    //        ['X', 'O', 'O'],
-    //        ['O', 'X', 'X']], NO_ONE_TURN, TIE_SCORES);
-    //   });
-    //   it("move without board is illegal", function() {
-    //     expectMove(ILLEGAL, X_TURN,
-    //       [['X', 'O', 'X'],
-    //        ['X', 'O', 'O'],
-    //        ['O', 'X', '']], 2, 2,
-    //       null, NO_ONE_TURN, TIE_SCORES);
-    //   });
-    //   it("placing X outside the board (in 0x3) is illegal", function() {
-    //     expectMove(ILLEGAL, X_TURN,
-    //       [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], 0, 3,
-    //       [['', '', '', 'X'],
-    //        ['', '', ''],
-    //        ['', '', '']], O_TURN, NO_ONE_WINS);
     //   });
 });
 //# sourceMappingURL=gameLogic_test.js.map

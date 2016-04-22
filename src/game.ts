@@ -100,7 +100,7 @@ module game {
   // isComputerTurn = false; // to make sure the computer can only move once.
   // moveService.makeMove(aiService.findComputerMove(move));
   }
-
+ 
   function updateUI(params: IUpdateUI): void { 
     log.info("Game got updateUI:", params); 
     animationEnded = false;
@@ -110,7 +110,7 @@ module game {
     if (!state) {
       console.log("getInitialState() call. Should happen twice including the fake!");
       state = gameLogic.getInitialState(params.playersInfo);
-    }
+    } 
     else {
       
 // Adding code to recreate instances and regain access to instance methods lost during data transfer over network

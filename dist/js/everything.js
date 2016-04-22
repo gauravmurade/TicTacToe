@@ -161,14 +161,14 @@ var TableSetup = (function () {
     TableSetup.prototype.addPlayerToTheTable = function (player) {
         this.playerList.push(player);
     };
-    TableSetup.prototype.incrementCurrentPlayerIndex = function () {
+    TableSetup.prototype.incrementCurrentPlayerIndex = function (winnersList) {
         while (true) {
             this.currentPlayerIndex++;
             this.currentPlayerIndex %= this.playerList.length;
-            if ((((this.currentPlayerIndex + 1) % this.playerList.length) == this.roundStartIndex) && (this.playerList[this.currentPlayerIndex].state != PlayerState.Init)) {
+            if ((this.currentPlayerIndex == this.roundStartIndex) && (this.playerList[this.currentPlayerIndex].state != PlayerState.Init)) {
                 //console.log('\n' + "Skipping player: " + this.playerList[this.currentPlayerIndex].name + '\n');
                 gameLogic.adjustPots(this);
-                gameLogic.roundOver(this);
+                winnersList = gameLogic.roundOver(this, winnersList);
                 return;
             }
             else if ((this.playerList[this.currentPlayerIndex].state != PlayerState.Fold) && (this.playerList[this.currentPlayerIndex].state != PlayerState.AllIn)) {
@@ -225,7 +225,7 @@ var TableSetup = (function () {
             return angular.copy(winningPlayers);
         }
     };
-    TableSetup.prototype.resetRound = function () {
+    TableSetup.prototype.resetRound = function (winnersList) {
         for (var i = 0; i < this.playerList.length; i++) {
             this.playerList[i].currentBet = 0;
             if (this.playerList[i].state !== PlayerState.Fold && this.playerList[i].state !== PlayerState.AllIn) {
@@ -239,14 +239,14 @@ var TableSetup = (function () {
             if ((this.currentPlayerIndex == this.dealerIndex) && (this.playerList[this.currentPlayerIndex].state == PlayerState.Fold || this.playerList[this.currentPlayerIndex].state == PlayerState.Fold)) {
                 //console.log('\n' + "Skipping player: " + this.playerList[this.currentPlayerIndex].name + '\n');
                 gameLogic.adjustPots(this);
-                gameLogic.roundOver(this);
+                winnersList = gameLogic.roundOver(this, winnersList);
                 return;
             }
             else if ((this.playerList[this.currentPlayerIndex].state != PlayerState.Fold) && (this.playerList[this.currentPlayerIndex].state != PlayerState.AllIn)) {
                 break;
             }
             else {
-                //                console.log('\n' + "Skipping player: " + this.playerList[this.currentPlayerIndex].name + '\n');
+                //console.log('\n' + "Skipping player: " + this.playerList[this.currentPlayerIndex].name + '\n');
                 this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.playerList.length;
             }
         }
@@ -397,39 +397,39 @@ function printCardDeck(cardDeck) {
     for (var i = 0; i < cardDeck.length; i++) {
     }
 }
+function isGameOver(table) {
+    if ((table.playerList.length == 0) || (table.playerList.length == 1)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 var gameLogic;
 (function (gameLogic) {
-    function isGameOver(table) {
-        if ((table.playerList.length == 0) || (table.playerList.length == 1)) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
     function getInitialTable(playersInfo) {
         var table = new TableSetup(playersInfo.length);
         for (var i = 0; i < playersInfo.length; i++) {
             table.addPlayerToTheTable(new Player(playersInfo[i].playerId, playersInfo[i].displayName));
         }
-        /*
-                table.addPlayerToTheTable(new Player("adit91","Adit"));
-                table.addPlayerToTheTable(new Player("ridhi91","Ridhi"));
-                table.addPlayerToTheTable(new Player("anto90","Anto"));
-                table.addPlayerToTheTable(new Player("gaurav89","Gaurav"));
-                table.addPlayerToTheTable(new Player("rachita88","Rachita"));
-        */
+        // table.addPlayerToTheTable(new Player("adit91","Adit"));
+        // table.addPlayerToTheTable(new Player("ridhi91","Ridhi"));
+        // table.addPlayerToTheTable(new Player("anto90","Anto"));
+        // table.addPlayerToTheTable(new Player("gaurav89","Gaurav"));
+        // table.addPlayerToTheTable(new Player("rachita88","Rachita"));
         table.potArray[table.getCurrentPotIndex()].addAllPlayersToThePot(table.playerList);
         table.deck = initializeTableDeck();
         distributeCards(table);
         //        console.log(table);
         return table;
     }
+    gameLogic.getInitialTable = getInitialTable;
     function getInitialState(playersInfo) {
-        return { table: getInitialTable(playersInfo), delta: null };
+        return { table: getInitialTable(playersInfo), delta: null, winnersList: [] };
     }
     gameLogic.getInitialState = getInitialState;
     function createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove) {
+        var winnersList = [];
         if (!stateBeforeMove) {
             var playersInfo = [];
             var player1 = {
@@ -455,10 +455,9 @@ var gameLogic;
         var tableAfterMove = angular.copy(table);
         currentPlayer = tableAfterMove.playerList[tableAfterMove.currentPlayerIndex];
         var tempCurrentPlayer = currentPlayer;
-        console.log("Printing tableAfterMove");
-        console.log(tableAfterMove);
         if (tableAfterMove.openedCards.length == 0) {
-            if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length)) &&
+            if ((tableAfterMove.currentPlayerIndex ==
+                ((tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.smallBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.smallBlind;
@@ -467,14 +466,9 @@ var gameLogic;
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addContribution(currentPlayer, tableAfterMove.smallBlind);
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].currentPotBetAmount = tableAfterMove.smallBlind;
             }
-            else if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 2) % tableAfterMove.playerList.length)) &&
+            else if ((tableAfterMove.currentPlayerIndex ==
+                ((tableAfterMove.dealerIndex + 2) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
-                if (tableAfterMove == null) {
-                    console.log("tableAfterMove is null!");
-                }
-                else {
-                    console.log("tableAfterMove is so not null!");
-                }
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.bigBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.bigBlind;
                 currentPlayer.currentBet = tableAfterMove.bigBlind;
@@ -514,7 +508,8 @@ var gameLogic;
                         }
                         var turnIndexAfterMove_1 = tableAfterMove.currentPlayerIndex;
                         var delta_1 = { currentPlayer: currentPlayer, amountAdded: amountAdded };
-                        var stateAfterMove_1 = { delta: delta_1, table: tableAfterMove };
+                        winnersList.push(currentPlayer);
+                        var stateAfterMove_1 = { delta: delta_1, table: tableAfterMove, winnersList: winnersList };
                         var endMatchScores_1;
                         endMatchScores_1 = null;
                         return { endMatchScores: endMatchScores_1, turnIndexAfterMove: turnIndexAfterMove_1, stateAfterMove: stateAfterMove_1 };
@@ -538,7 +533,7 @@ var gameLogic;
                         // console.log('\n');
                         var turnIndexAfterMove_2 = tableAfterMove.currentPlayerIndex;
                         var delta_2 = { currentPlayer: currentPlayer, amountAdded: amountAdded };
-                        var stateAfterMove_2 = { delta: delta_2, table: tableAfterMove };
+                        var stateAfterMove_2 = { delta: delta_2, table: tableAfterMove, winnersList: winnersList };
                         var endMatchScores_2;
                         endMatchScores_2 = null;
                         return { endMatchScores: endMatchScores_2, turnIndexAfterMove: turnIndexAfterMove_2, stateAfterMove: stateAfterMove_2 };
@@ -668,6 +663,9 @@ var gameLogic;
                     }
                     currentPlayer.chipsInPocket -= chipsNeededToMatchTheBet;
                     currentPlayer.currentBet = tableAfterMove.currentCallAmount;
+                    if (currentPlayer.chipsInPocket == 0) {
+                        currentPlayer.state = PlayerState.AllIn;
+                    }
                     break;
                 }
             case PlayerState.Raise:
@@ -696,25 +694,25 @@ var gameLogic;
                     tableAfterMove.currentCallAmount = currentPlayer.currentBet;
                     tableAfterMove.roundStartIndex = tableAfterMove.currentPlayerIndex;
                     tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].currentPotBetAmount += balance;
+                    if (currentPlayer.chipsInPocket == 0) {
+                        currentPlayer.state = PlayerState.AllIn;
+                    }
                     break;
                 }
         }
         // console.log("Turn Start: ");
         // console.log("Player: " + tableAfterMove.currentPlayerIndex);
         // console.log("Action: " + PlayerState[currentPlayer.state])
-        // console.log("Pot After the Turn: ");
-        // console.log(tableAfterMove.potArray);
-        // console.log(tableAfterMove.playerList);
-        // console.log('\n');
         var gameOverOrNot = isGameOver(tableAfterMove);
         var turnIndexAfterMove;
-        if ((((tableAfterMove.currentPlayerIndex + 1) % tableAfterMove.playerList.length) == tableAfterMove.roundStartIndex) && (currentPlayer.state != PlayerState.Init)) {
+        if ((((tableAfterMove.currentPlayerIndex + 1) % tableAfterMove.playerList.length) ==
+            tableAfterMove.roundStartIndex) && (currentPlayer.state != PlayerState.Init)) {
             adjustPots(tableAfterMove);
-            roundOver(tableAfterMove);
-            lastCardOfTheRound = true;
             if (tableAfterMove.openedCards.length == 5) {
                 handOver = true;
             }
+            winnersList = roundOver(tableAfterMove, winnersList);
+            lastCardOfTheRound = true;
         }
         if (gameOverOrNot) {
             turnIndexAfterMove = -1;
@@ -727,7 +725,7 @@ var gameLogic;
             }
             else {
                 if (lastCardOfTheRound == false) {
-                    tableAfterMove.incrementCurrentPlayerIndex();
+                    tableAfterMove.incrementCurrentPlayerIndex(winnersList);
                 }
             }
             turnIndexAfterMove = tableAfterMove.currentPlayerIndex;
@@ -737,13 +735,13 @@ var gameLogic;
         // console.log(tableAfterMove.playerList);
         // console.log('\n');
         var delta = { currentPlayer: currentPlayer, amountAdded: amountAdded };
-        var stateAfterMove = { delta: delta, table: tableAfterMove };
+        var stateAfterMove = { delta: delta, table: tableAfterMove, winnersList: winnersList };
         var endMatchScores;
         endMatchScores = null;
         return { endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove };
     }
     gameLogic.createMove = createMove;
-    function roundOver(tableAfterMove) {
+    function roundOver(tableAfterMove, winnersList) {
         switch (tableAfterMove.openedCards.length) {
             case 0:
                 {
@@ -752,29 +750,31 @@ var gameLogic;
                     }
                     //                            console.log("1st Round Over! 3 Cards Open");
                     tableAfterMove.verifyAndAdjustPots();
-                    tableAfterMove.resetRound();
+                    tableAfterMove.resetRound(winnersList);
                     break;
                 }
             case 3:
                 {
                     tableAfterMove.openedCards.push(tableAfterMove.closedCards.pop());
                     //                            console.log("2nd Round Over! 1 Card Open");
-                    tableAfterMove.resetRound();
+                    tableAfterMove.resetRound(winnersList);
                     break;
                 }
             case 4:
                 {
                     tableAfterMove.openedCards.push(tableAfterMove.closedCards.pop());
                     //                            console.log("3rd Round Over! 1 Card Open");
-                    tableAfterMove.resetRound();
+                    tableAfterMove.resetRound(winnersList);
                     break;
                 }
             case 5: {
                 //All the Cards are already open. No bets remaining. Divide the pot; Basically call the Hand Eval Function.
                 tableAfterMove.winners = tableAfterMove.awardWinners();
+                winnersList = tableAfterMove.winners;
+                // console.log("Winners List: ");
+                // console.log(winnersList);
                 /* Once the winners are determined, change view to show winners*/
                 /*this should be changed to reflect changes in state*/
-                //                            console.log("case 5 Called");
                 //                            console.log("\nHand Over");
                 tableAfterMove.removePlayersWithInsufficientChips();
                 tableAfterMove.resetHand();
@@ -782,6 +782,7 @@ var gameLogic;
                 }
             }
         }
+        return winnersList;
     }
     gameLogic.roundOver = roundOver;
     function adjustPots(tableAfterMove) {
@@ -939,15 +940,21 @@ var gameLogic;
         }
     }
     gameLogic.canRaiseOrNot = canRaiseOrNot;
-    function canAllInOrNot(table, currentPlayer) {
+    function canAllInOrNot(tableAfterMove, currentPlayer) {
         if (currentPlayer == null) {
             return false;
         }
-        return true;
+        if (canSmallBlindOrNot(tableAfterMove) || canBigBlindOrNot(tableAfterMove)) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
     gameLogic.canAllInOrNot = canAllInOrNot;
     function rankHand(str) {
         //takes a string of per person hands and returns the rank as a number
+        var hands = ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-"];
         var handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
         var index = 10; //index into handRanks
         var winCardIndexes, i;
@@ -1014,14 +1021,14 @@ var gameLogic;
                                 }
                             }
                         }
-                        //                        console.log("Final Winning hand: ");
-                        //                        console.log(wci); 
+                        // console.log("Final Winning hand: ");
+                        // console.log(wci); 
                         index = winIndex;
                     }
                 }
             }
-            //            console.log("Hand: " + handRanks[index]);
-            //            console.log("Hand Name: "  + hands[index]);
+            // console.log("Hand: " + handRanks[index]);
+            // console.log("Hand Name: "  + hands[index]);
             var winningScoreAndCardsObject = new winningScoreAndCards();
             winningScoreAndCardsObject.index = index;
             winningScoreAndCardsObject.wci = wci;
@@ -1492,39 +1499,50 @@ var gameLogic;
     gameLogic.sortNumber = sortNumber;
     function forSimpleTestHtml() {
         var move = gameLogic.createMove(null, null, 0, 0);
-        move.stateAfterMove.table.playerList[0].chipsInPocket = 500;
-        move.stateAfterMove.table.playerList[1].chipsInPocket = 290;
-        move.stateAfterMove.table.playerList[2].chipsInPocket = 500;
-        move.stateAfterMove.table.playerList[3].chipsInPocket = 300;
-        move.stateAfterMove.table.playerList[4].chipsInPocket = 500;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[3].state = PlayerState.AllIn;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[4].state = PlayerState.Call;
         move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
         move.stateAfterMove.table.playerList[0].state = PlayerState.Call;
         move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[1].state = PlayerState.AllIn;
+        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
         move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[2].state = PlayerState.Call;
+        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
         move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
+        move = gameLogic.createMove(move.stateAfterMove, null, 30, move.turnIndexAfterMove);
+        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
+        move = gameLogic.createMove(move.stateAfterMove, null, 30, move.turnIndexAfterMove);
+        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
+        move = gameLogic.createMove(move.stateAfterMove, null, 30, move.turnIndexAfterMove);
+        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
+        move = gameLogic.createMove(move.stateAfterMove, null, 30, move.turnIndexAfterMove);
+        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
+        move = gameLogic.createMove(move.stateAfterMove, null, 30, move.turnIndexAfterMove);
         /** Three Cards Opened */
+        /**
         move.stateAfterMove.table.playerList[2].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        
         move.stateAfterMove.table.playerList[4].state = PlayerState.Fold;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        
         move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        */
         /** Fourth Card Opened */
+        /**
         move.stateAfterMove.table.playerList[2].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        
         move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        */
         /** Fifth Card Opened */
+        /**
         move.stateAfterMove.table.playerList[2].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        
         move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
+        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
+        */
         /**Hand Over */
     }
     gameLogic.forSimpleTestHtml = forSimpleTestHtml;
