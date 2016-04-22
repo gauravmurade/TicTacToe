@@ -581,7 +581,7 @@ module gameLogic {
     	   throw new Error("Can only make a move if the game is not over! Number of required payers for the game not satisfied");
         }
 
-        let tableAfterMove = angular.copy(table);
+        let tableAfterMove = angular.copy(table); 
         currentPlayer = tableAfterMove.playerList[tableAfterMove.currentPlayerIndex];
         
         let tempCurrentPlayer : Player = currentPlayer;

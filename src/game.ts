@@ -178,13 +178,13 @@ module game {
       
       state.table.playerList[temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
       let nextMove = gameLogic.createMove(state, null, amountRaised, move.turnIndexAfterMove);
-      canMakeMove = false; // to prevent making another move
-      moveService.makeMove(nextMove);
       console.log("cellClicked STATE AFTER MAKE MOVE: ");
       console.log(nextMove); 
+      canMakeMove = false; // to prevent making another move
+      moveService.makeMove(nextMove);
     } catch (e) {
       log.info("Illegal Move", action);
-      console.log(e);
+      console.log(e); 
     } 
   }
 

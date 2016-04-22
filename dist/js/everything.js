@@ -1684,10 +1684,10 @@ var game;
             game.oldOpenCardsSize = game.state.table.openedCards.length;
             game.state.table.playerList[game.temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
             var nextMove = gameLogic.createMove(game.state, null, amountRaised, game.move.turnIndexAfterMove);
-            game.canMakeMove = false; // to prevent making another move
-            moveService.makeMove(nextMove);
             console.log("cellClicked STATE AFTER MAKE MOVE: ");
             console.log(nextMove);
+            game.canMakeMove = false; // to prevent making another move
+            moveService.makeMove(nextMove);
         }
         catch (e) {
             log.info("Illegal Move", action);
