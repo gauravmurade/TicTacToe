@@ -461,8 +461,6 @@ var gameLogic;
         if (tableAfterMove.openedCards.length == 0) {
             if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
-                console.log("Playing small blind" + typeof (tableAfterMove));
-                console.log("Playing small blind" + typeof (tableAfterMove.getCurrentPotIndex()));
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.smallBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.smallBlind;
                 currentPlayer.currentBet = tableAfterMove.smallBlind;
@@ -472,8 +470,12 @@ var gameLogic;
             }
             else if ((tableAfterMove.currentPlayerIndex == ((tableAfterMove.dealerIndex + 2) % tableAfterMove.playerList.length)) &&
                 (currentPlayer.state == PlayerState.Init)) {
-                console.log("Playing large blind" + typeof (tableAfterMove));
-                console.log("Playing large blind" + typeof (tableAfterMove.getCurrentPotIndex()));
+                if (tableAfterMove == null) {
+                    console.log("tableAfterMove is null!");
+                }
+                else {
+                    console.log("tableAfterMove is so not null!");
+                }
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.bigBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.bigBlind;
                 currentPlayer.currentBet = tableAfterMove.bigBlind;
@@ -1622,10 +1624,9 @@ var game;
         game.move = params.move;
         game.state = game.move.stateAfterMove;
         if (!game.state) {
-            console.log("Calling updateUI");
+            console.log("getInitialState() call. Should happen twice including the fake!");
             game.state = gameLogic.getInitialState(params.playersInfo);
         }
-        console.log(params, game.state);
         game.canMakeMove = game.move.turnIndexAfterMove >= 0 &&
             params.yourPlayerIndex === game.move.turnIndexAfterMove; // it's my turn
         console.log("canMakeMove: " + game.canMakeMove + " params.yourPlayerIndex: " + params.yourPlayerIndex + "move.turnIndexAfterMove: " + game.move.turnIndexAfterMove
@@ -1639,8 +1640,6 @@ var game;
             yourPlayerCards_card2 = game.state.table.playerList[params.yourPlayerIndex].cards[1];
             game.class_yourPlayerCards_card1 = getCardClass(yourPlayerCards_card1);
             game.class_yourPlayerCards_card2 = getCardClass(yourPlayerCards_card2);
-            // getPlayerOptions();
-            console.log("cardsClass YPI" + game.class_yourPlayerCards_card1 + " " + game.class_yourPlayerCards_card2);
         }
         /*************************************************************************/
         // Is it the computer's turn?
@@ -1684,23 +1683,15 @@ var game;
             //update the closedCards size
             game.oldOpenCardsSize = game.state.table.openedCards.length;
             game.state.table.playerList[game.temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
-            console.log("Move Before call :", game.move);
             var nextMove = gameLogic.createMove(game.state, null, amountRaised, game.move.turnIndexAfterMove);
             game.canMakeMove = false; // to prevent making another move
             moveService.makeMove(nextMove);
             console.log("cellClicked STATE AFTER MAKE MOVE: ");
-            console.log(game.state);
+            console.log(nextMove);
         }
         catch (e) {
             log.info("Illegal Move", action);
             console.log(e);
-            console.log(e instanceof TypeError); // true
-            console.log(e.message); // "null has no properties"
-            console.log(e.name); // "TypeError"
-            console.log(e.fileName); // "Scratchpad/1"
-            console.log(e.lineNumber); // 2
-            console.log(e.columnNumber); // 2
-            console.log(e.stack); // "@Scratchpad/2:2:3\n"      return;
         }
     }
     game.cellClicked = cellClicked;

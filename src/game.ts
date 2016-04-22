@@ -107,10 +107,9 @@ module game {
     move = params.move; 
     state = move.stateAfterMove;
     if (!state) {
-      console.log("Calling updateUI");
+      console.log("getInitialState() call. Should happen twice including the fake!");
       state = gameLogic.getInitialState(params.playersInfo);
     }
-    console.log(params , state);    
     canMakeMove = move.turnIndexAfterMove >= 0 && // game is ongoing
       params.yourPlayerIndex === move.turnIndexAfterMove; // it's my turn
    
@@ -128,7 +127,7 @@ module game {
       class_yourPlayerCards_card1 = getCardClass(yourPlayerCards_card1);
       class_yourPlayerCards_card2 = getCardClass(yourPlayerCards_card2);
       // getPlayerOptions();
-      console.log("cardsClass YPI" + class_yourPlayerCards_card1 + " " + class_yourPlayerCards_card2);
+//      console.log("cardsClass YPI" + class_yourPlayerCards_card1 + " " + class_yourPlayerCards_card2);
     }
     
     /*************************************************************************/
@@ -178,22 +177,14 @@ module game {
       oldOpenCardsSize = state.table.openedCards.length;
       
       state.table.playerList[temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
-      console.log("Move Before call :",move);
       let nextMove = gameLogic.createMove(state, null, amountRaised, move.turnIndexAfterMove);
       canMakeMove = false; // to prevent making another move
       moveService.makeMove(nextMove);
       console.log("cellClicked STATE AFTER MAKE MOVE: ");
-      console.log(state);
+      console.log(nextMove); 
     } catch (e) {
       log.info("Illegal Move", action);
       console.log(e);
-      console.log(e instanceof TypeError); // true
-      console.log(e.message);              // "null has no properties"
-      console.log(e.name);                 // "TypeError"
-      console.log(e.fileName);             // "Scratchpad/1"
-      console.log(e.lineNumber);           // 2
-      console.log(e.columnNumber);         // 2
-      console.log(e.stack);                // "@Scratchpad/2:2:3\n"      return;
     } 
   }
 

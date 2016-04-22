@@ -593,9 +593,6 @@ module gameLogic {
             if( (tableAfterMove.currentPlayerIndex == ( (tableAfterMove.dealerIndex + 1) % tableAfterMove.playerList.length) ) && 
                 (currentPlayer.state == PlayerState.Init) ) {
     		    
-                console.log("Playing small blind" + typeof(tableAfterMove));
-                console.log("Playing small blind" + typeof(tableAfterMove.getCurrentPotIndex()));
-
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.smallBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.smallBlind;
                 currentPlayer.currentBet = tableAfterMove.smallBlind;
@@ -606,8 +603,12 @@ module gameLogic {
             else if( (tableAfterMove.currentPlayerIndex == ( (tableAfterMove.dealerIndex + 2) % tableAfterMove.playerList.length) ) && 
                      (currentPlayer.state == PlayerState.Init) ) {
                          
-                console.log("Playing large blind" + typeof(tableAfterMove));
-                console.log("Playing large blind" + typeof(tableAfterMove.getCurrentPotIndex()));
+                if(tableAfterMove == null) {
+                    console.log("tableAfterMove is null!");                
+                }
+                else {
+                    console.log("tableAfterMove is so not null!");                                    
+                }
 
                 tableAfterMove.potArray[tableAfterMove.getCurrentPotIndex()].addAmountToPot(tableAfterMove.bigBlind);
                 currentPlayer.chipsInPocket -= tableAfterMove.bigBlind;
