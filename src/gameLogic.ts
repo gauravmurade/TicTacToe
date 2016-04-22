@@ -180,8 +180,6 @@ class TableSetup {
 	roundStartIndex : number;
 	currentCallAmount : number;
     playerIndicesRemovedInThisHand : number[];
-    
-    //
     winners:Player[];
 
     constructor(noOfPlayers: number) {
@@ -527,9 +525,8 @@ module gameLogic {
     }
   
      function getInitialTable(playersInfo: IPlayerInfo[]): Table {
-        let noOfPlayers: number = 2;
-        let table : Table = new TableSetup(noOfPlayers);
 
+       let table : Table = new TableSetup(playersInfo.length);
        for(let i: number = 0; i< playersInfo.length; i++) {
            table.addPlayerToTheTable(new Player(playersInfo[i].playerId,playersInfo[i].displayName));
        }

@@ -408,8 +408,7 @@ var gameLogic;
         }
     }
     function getInitialTable(playersInfo) {
-        var noOfPlayers = 2;
-        var table = new TableSetup(noOfPlayers);
+        var table = new TableSetup(playersInfo.length);
         for (var i = 0; i < playersInfo.length; i++) {
             table.addPlayerToTheTable(new Player(playersInfo[i].playerId, playersInfo[i].displayName));
         }
