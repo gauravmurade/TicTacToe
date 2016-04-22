@@ -105,42 +105,45 @@ module game {
     log.info("Game got updateUI:", params); 
     animationEnded = false;
     move = params.move;
-    
-// Adding code to recreate instances and regain access to instance methods lost during data transfer over network
-// ********************************************************************************************//
-
-    let tempPlayer: Player = new Player(params.move.stateAfterMove.delta.currentPlayer.id,
-      params.move.stateAfterMove.delta.currentPlayer.name);
-
-    tempPlayer.state = params.move.stateAfterMove.delta.currentPlayer.state;
-    tempPlayer.chipsInPocket = params.move.stateAfterMove.delta.currentPlayer.chipsInPocket;
-    tempPlayer.currentBet = params.move.stateAfterMove.delta.currentPlayer.currentBet;
-    tempPlayer.cards = params.move.stateAfterMove.delta.currentPlayer.cards;
-        
-    let tempTable: Table = new TableSetup(params.playersInfo.length);
-    tempTable.playerList = params.move.stateAfterMove.table.playerList;
-    tempTable.deck = params.move.stateAfterMove.table.deck;
-    tempTable.openedCards = params.move.stateAfterMove.table.openedCards;
-    tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
-    tempTable.dealerIndex = params.move.stateAfterMove.table.dealerIndex;
-    tempTable.currentPlayerIndex = params.move.stateAfterMove.table.currentPlayerIndex;
-    tempTable.potArray = params.move.stateAfterMove.table.potArray;
-    tempTable.smallBlind = params.move.stateAfterMove.table.smallBlind;
-    tempTable.bigBlind = params.move.stateAfterMove.table.bigBlind;
-    tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
-    tempTable.currentCallAmount = params.move.stateAfterMove.table.currentCallAmount;
-    tempTable.playerIndicesRemovedInThisHand = params.move.stateAfterMove.table.playerIndicesRemovedInThisHand;
-    tempTable.winners = params.move.stateAfterMove.table.winners;
- 
-    move.stateAfterMove.delta.currentPlayer = tempPlayer;
-    move.stateAfterMove.table = tempTable;
-    
-// ********************************************************************************************//
-    
     state = move.stateAfterMove;
+        
     if (!state) {
       console.log("getInitialState() call. Should happen twice including the fake!");
       state = gameLogic.getInitialState(params.playersInfo);
+    }
+    else {
+      
+// Adding code to recreate instances and regain access to instance methods lost during data transfer over network
+// ********************************************************************************************//
+
+      let tempPlayer: Player = new Player(params.move.stateAfterMove.delta.currentPlayer.id,
+        params.move.stateAfterMove.delta.currentPlayer.name);
+
+      tempPlayer.state = params.move.stateAfterMove.delta.currentPlayer.state;
+      tempPlayer.chipsInPocket = params.move.stateAfterMove.delta.currentPlayer.chipsInPocket;
+      tempPlayer.currentBet = params.move.stateAfterMove.delta.currentPlayer.currentBet;
+      tempPlayer.cards = params.move.stateAfterMove.delta.currentPlayer.cards;
+          
+      let tempTable: Table = new TableSetup(params.playersInfo.length);
+      tempTable.playerList = params.move.stateAfterMove.table.playerList;
+      tempTable.deck = params.move.stateAfterMove.table.deck;
+      tempTable.openedCards = params.move.stateAfterMove.table.openedCards;
+      tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
+      tempTable.dealerIndex = params.move.stateAfterMove.table.dealerIndex;
+      tempTable.currentPlayerIndex = params.move.stateAfterMove.table.currentPlayerIndex;
+      tempTable.potArray = params.move.stateAfterMove.table.potArray;
+      tempTable.smallBlind = params.move.stateAfterMove.table.smallBlind;
+      tempTable.bigBlind = params.move.stateAfterMove.table.bigBlind;
+      tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
+      tempTable.currentCallAmount = params.move.stateAfterMove.table.currentCallAmount;
+      tempTable.playerIndicesRemovedInThisHand = params.move.stateAfterMove.table.playerIndicesRemovedInThisHand;
+      tempTable.winners = params.move.stateAfterMove.table.winners;
+  
+      move.stateAfterMove.delta.currentPlayer = tempPlayer;
+      move.stateAfterMove.table = tempTable;
+    
+// ********************************************************************************************//
+      
     }
     canMakeMove = move.turnIndexAfterMove >= 0 && // game is ongoing
       params.yourPlayerIndex === move.turnIndexAfterMove; // it's my turn
