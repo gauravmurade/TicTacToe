@@ -5,56 +5,60 @@
 
 
 describe("In Poker", function() {
-//   let OK = true;
-//   let ILLEGAL = false; 
-//   let P1_TURN = 0;
-//   let P2_TURN = 1;
-//   let P3_TURN = 2;
-//   let P4_TURN = 3;
-//   let P5_TURN = 4;
-//   let NO_ONE_TURN = -1;
-//   let NO_ONE_WINS: number[] = null;
-//   let P1_WIN_SCORES = [1, 0, 0, 0, 0];
-//   let P2_WIN_SCORES = [0, 1, 0, 0, 0];
-//   let P3_WIN_SCORES = [0, 0, 1, 0, 0];
-//   let P4_WIN_SCORES = [0, 0, 0, 1, 0];
-//   let P5_WIN_SCORES = [0, 0, 0, 0, 1];
+  let OK = true;
+  let ILLEGAL = false; 
+  let P1_TURN = 0;
+  let P2_TURN = 1;
+  let P3_TURN = 2;
+  let P4_TURN = 3;
+  let P5_TURN = 4;
+  let NO_ONE_TURN = -1;
+  let NO_ONE_WINS: number[] = null;
+  let P1_WIN_SCORES = [1, 0, 0, 0, 0];
+  let P2_WIN_SCORES = [0, 1, 0, 0, 0];
+  let P3_WIN_SCORES = [0, 0, 1, 0, 0];
+  let P4_WIN_SCORES = [0, 0, 0, 1, 0];
+  let P5_WIN_SCORES = [0, 0, 0, 0, 1];
 
-//   function expectMove(
-//       isOk: boolean,
-//       turnIndexBeforeMove: number,
-//       tableBeforeMove: Table,
-//       currentPlayer : Player,
-//       amountAdded : number,
-//       tableAfterMove: Table,
-//       turnIndexAfterMove: number,
-//       endMatchScores: number[]): void {
-//     let stateTransition: IStateTransition = {
-//       turnIndexBeforeMove: turnIndexBeforeMove,
-//       stateBeforeMove: tableBeforeMove ? {table: tableBeforeMove, delta: null} : null,
-//       move: {
-//         turnIndexAfterMove: turnIndexAfterMove,
-//         endMatchScores: endMatchScores,
-//         stateAfterMove: {table: tableAfterMove, 
-//             delta: {currentPlayer: currentPlayer, amountAdded: amountAdded}}
-//       },
-//       numberOfPlayers: null
-//     };
-//     if (isOk) {
-//       gameLogic.checkMoveOk(stateTransition);
-//     } else {
-//       // We expect an exception to be thrown :)
-//       let didThrowException = false;
-//       try {
-//         gameLogic.checkMoveOk(stateTransition);
-//       } catch (e) {
-//         didThrowException = true;
-//       }
-//       if (!didThrowException) {
-//         throw new Error("We expect an illegal move, but checkMoveOk didn't throw any exception!")
-//       }
-//     }
-//   }
+  function expectMove(
+      isOk: boolean,
+      turnIndexBeforeMove: number,
+      tableBeforeMove: Table,
+      currentPlayer : Player,
+      amountAdded : number,
+      tableAfterMove: Table,
+      turnIndexAfterMove: number,
+      endMatchScores: number[]): void {
+          
+    let stateTransition: IStateTransition = {
+      turnIndexBeforeMove: turnIndexBeforeMove,
+      stateBeforeMove: tableBeforeMove ? {table: tableBeforeMove, delta: null, winnersList: []} : null,
+      move: {
+        turnIndexAfterMove: turnIndexAfterMove,
+        endMatchScores: endMatchScores,
+        stateAfterMove: {table: tableAfterMove, 
+            delta: {currentPlayer: currentPlayer, amountAdded: amountAdded},
+            winnersList: []
+        }
+      },
+      numberOfPlayers: null
+    };
+    if (isOk) {
+        gameLogic.checkMoveOk(stateTransition);
+    } 
+    else {
+        // We expect an exception to be thrown :)
+        let didThrowException = false;
+        try {
+            gameLogic.checkMoveOk(stateTransition);
+        } catch (e) {
+            didThrowException = true;
+        }
+        if (!didThrowException) {
+            throw new Error("We expect an illegal move, but checkMoveOk didn't throw any exception!")
+        }
+    }
+}
 
 
 //   it("player 1 small blind move from initial state is legal", function() {
@@ -216,131 +220,131 @@ describe("In Poker", function() {
 //   it("Everybody but 1 person folds there hand", function() {
 //   });
 
-//   it("Check for end of Round 4 -> Check for Winner -> Winning Hand is Royal Flush", function() {
-//     let player1 = new Player("adit91","Adit");
-//     player1.state = PlayerState.Check;
-//     player1.chipsInPocket = 280;
-//     player1.currentBet = 0;
-//     player1.cards.push(new Card("A", CardSuite.c));
-//     player1.cards.push(new Card("K", CardSuite.c));
+  it("Check for end of Round 4 -> Check for Winner -> Winning Hand is Royal Flush", function() {
+    let player1 = new Player("adit91","Adit");
+    player1.state = PlayerState.Check;
+    player1.chipsInPocket = 280;
+    player1.currentBet = 0;
+    player1.cards.push(new Card("A", CardSuite.c));
+    player1.cards.push(new Card("K", CardSuite.c));
 
-//     let player2 = new Player("ridhi91","Ridhi");
-//     player2.state = PlayerState.Init;
-//     player2.chipsInPocket = 280;
-//     player2.currentBet = 0;
-//     player2.cards.push(new Card("3", CardSuite.c));
-//     player2.cards.push(new Card("3", CardSuite.d));
+    let player2 = new Player("ridhi91","Ridhi");
+    player2.state = PlayerState.Init;
+    player2.chipsInPocket = 280;
+    player2.currentBet = 0;
+    player2.cards.push(new Card("3", CardSuite.c));
+    player2.cards.push(new Card("3", CardSuite.d));
 
-//     let player3 = new Player("anto90","Anto");
-//     player3.state = PlayerState.Fold;
-//     player3.cards.push(new Card("4", CardSuite.c));
-//     player3.cards.push(new Card("4", CardSuite.d));
+    let player3 = new Player("anto90","Anto");
+    player3.state = PlayerState.Fold;
+    player3.cards.push(new Card("4", CardSuite.c));
+    player3.cards.push(new Card("4", CardSuite.d));
 
-//     let player4 = new Player("gaurav89", "Gaurav");
-//     player4.state = PlayerState.Fold;
-//     player4.cards.push(new Card("5", CardSuite.c));
-//     player4.cards.push(new Card("5", CardSuite.d));
+    let player4 = new Player("gaurav89", "Gaurav");
+    player4.state = PlayerState.Fold;
+    player4.cards.push(new Card("5", CardSuite.c));
+    player4.cards.push(new Card("5", CardSuite.d));
 
-//     let player5 = new Player("rachita88","Rachita");
-//     player5.state = PlayerState.Fold;
-//     player5.cards.push(new Card("6", CardSuite.c));
-//     player5.cards.push(new Card("6", CardSuite.d));
+    let player5 = new Player("rachita88","Rachita");
+    player5.state = PlayerState.Fold;
+    player5.cards.push(new Card("6", CardSuite.c));
+    player5.cards.push(new Card("6", CardSuite.d));
 
-//     let tableBeforeMove = new TableSetup(5);
-//     tableBeforeMove.bigBlind = 20;
-//     tableBeforeMove.closedCards = [];
-//     tableBeforeMove.currentCallAmount = 0;
-//     tableBeforeMove.currentPlayerIndex = 1;
-//     tableBeforeMove.dealerIndex = 4;
-//     tableBeforeMove.deck = null;
-//     let card1 = new Card("Q", CardSuite.c);
-//     let card2 = new Card("J", CardSuite.c);
-//     let card3 = new Card("10", CardSuite.c);
-//     let card4 = new Card("3", CardSuite.s);
-//     let card5 = new Card("4", CardSuite.h); 
-//     tableBeforeMove.openedCards.push(card1);
-//     tableBeforeMove.openedCards.push(card2);
-//     tableBeforeMove.openedCards.push(card3);
-//     tableBeforeMove.openedCards.push(card4);
-//     tableBeforeMove.openedCards.push(card5);
-//     tableBeforeMove.playerIndicesRemovedInThisHand = [];
-//     tableBeforeMove.addPlayerToTheTable(player1);
-//     tableBeforeMove.addPlayerToTheTable(player2);
-//     tableBeforeMove.addPlayerToTheTable(player3);
-//     tableBeforeMove.addPlayerToTheTable(player4);
-//     tableBeforeMove.addPlayerToTheTable(player5);
-//     let pot = new Pot();
-//     pot.currentPotBetAmount = 20;
-//     pot.playersContributions = [20,20];
-//     pot.playersInvolved.push(player1);
-//     pot.playersInvolved.push(player2);
-//     pot.totalAmount = 40;
-//     tableBeforeMove.potArray.push(pot);
-//     tableBeforeMove.roundStartIndex = 0;
-//     tableBeforeMove.smallBlind = 10;
+    let tableBeforeMove = new TableSetup(5);
+    tableBeforeMove.bigBlind = 20;
+    tableBeforeMove.closedCards = [];
+    tableBeforeMove.currentCallAmount = 0;
+    tableBeforeMove.currentPlayerIndex = 1;
+    tableBeforeMove.dealerIndex = 4;
+    tableBeforeMove.deck = null;
+    let card1 = new Card("Q", CardSuite.c);
+    let card2 = new Card("J", CardSuite.c);
+    let card3 = new Card("10", CardSuite.c);
+    let card4 = new Card("3", CardSuite.s);
+    let card5 = new Card("4", CardSuite.h); 
+    tableBeforeMove.openedCards.push(card1);
+    tableBeforeMove.openedCards.push(card2);
+    tableBeforeMove.openedCards.push(card3);
+    tableBeforeMove.openedCards.push(card4);
+    tableBeforeMove.openedCards.push(card5);
+    tableBeforeMove.playerIndicesRemovedInThisHand = [];
+    tableBeforeMove.addPlayerToTheTable(player1);
+    tableBeforeMove.addPlayerToTheTable(player2);
+    tableBeforeMove.addPlayerToTheTable(player3);
+    tableBeforeMove.addPlayerToTheTable(player4);
+    tableBeforeMove.addPlayerToTheTable(player5);
+    let pot = new Pot();
+    pot.currentPotBetAmount = 20;
+    pot.playersContributions = [20,20];
+    pot.playersInvolved.push(player1);
+    pot.playersInvolved.push(player2);
+    pot.totalAmount = 40;
+    tableBeforeMove.potArray.push(pot);
+    tableBeforeMove.roundStartIndex = 0;
+    tableBeforeMove.smallBlind = 10;
 
-//     let tableAfterMove = new TableSetup(5);
-//     tableAfterMove.bigBlind = 20;
-//     card1 = new Card("2", CardSuite.s);
-//     card2 = new Card("A", CardSuite.s);
-//     card3 = new Card("K", CardSuite.h);
-//     card4 = new Card("J", CardSuite.h);
-//     card5 = new Card("9", CardSuite.h);
-//     tableBeforeMove.closedCards.push(card1);
-//     tableAfterMove.closedCards.push(card2);
-//     tableAfterMove.closedCards.push(card3);
-//     tableAfterMove.closedCards.push(card4);
-//     tableAfterMove.closedCards.push(card5);
-//     tableAfterMove.currentCallAmount = 0;
-//     tableAfterMove.currentPlayerIndex = 1;
-//     tableAfterMove.dealerIndex = 0;
-//     tableAfterMove.deck = initializeTableDeck();
-//     for(let i : number = 0; i<18; i++) {
-//         tableAfterMove.deck.pop();
-//     }    
-//     tableAfterMove.openedCards = [];
-//     tableAfterMove.playerIndicesRemovedInThisHand = [];
-//     player1.chipsInPocket = 320
-//     player1.state = PlayerState.Init
-//     player1.cards = []
-//     player1.cards.push(new Card("K", CardSuite.s));
-//     player1.cards.push(new Card("8", CardSuite.s));
-//     player2.state = PlayerState.Init
-//     player2.cards = []
-//     player2.cards.push(new Card("Q", CardSuite.s));
-//     player2.cards.push(new Card("7", CardSuite.s));
-//     player3.state = PlayerState.Init
-//     player3.cards = []
-//     player3.cards.push(new Card("J", CardSuite.s));
-//     player3.cards.push(new Card("6", CardSuite.s));
-//     player4.state = PlayerState.Init
-//     player4.cards = []
-//     player4.cards.push(new Card("10", CardSuite.s));
-//     player4.cards.push(new Card("5", CardSuite.s));
-//     player5.state = PlayerState.Init
-//     player5.cards = []
-//     player5.cards.push(new Card("9", CardSuite.s));
-//     player5.cards.push(new Card("4", CardSuite.s));
-//     tableAfterMove.addPlayerToTheTable(player1);
-//     tableAfterMove.addPlayerToTheTable(player2);
-//     tableAfterMove.addPlayerToTheTable(player3);
-//     tableAfterMove.addPlayerToTheTable(player4);
-//     tableAfterMove.addPlayerToTheTable(player5);
-//     pot = new Pot();
-//     pot.currentPotBetAmount = 0;
-//     pot.playersContributions = [0,0,0,0,0];
-//     pot.playersInvolved.push(player1);
-//     pot.playersInvolved.push(player2);
-//     pot.playersInvolved.push(player3);
-//     pot.playersInvolved.push(player4);
-//     pot.playersInvolved.push(player5);
-//     pot.totalAmount = 0;
-//     tableAfterMove.potArray.push(pot);
-//     tableAfterMove.roundStartIndex = 1;
-//     tableAfterMove.smallBlind = 10;
+    let tableAfterMove = new TableSetup(5);
+    tableAfterMove.bigBlind = 20;
+    card1 = new Card("2", CardSuite.s);
+    card2 = new Card("A", CardSuite.s);
+    card3 = new Card("K", CardSuite.h);
+    card4 = new Card("J", CardSuite.h);
+    card5 = new Card("9", CardSuite.h);
+    tableBeforeMove.closedCards.push(card1);
+    tableAfterMove.closedCards.push(card2);
+    tableAfterMove.closedCards.push(card3);
+    tableAfterMove.closedCards.push(card4);
+    tableAfterMove.closedCards.push(card5);
+    tableAfterMove.currentCallAmount = 0;
+    tableAfterMove.currentPlayerIndex = 1;
+    tableAfterMove.dealerIndex = 0;
+    tableAfterMove.deck = initializeTableDeck();
+    for(let i : number = 0; i<18; i++) {
+        tableAfterMove.deck.pop();
+    }    
+    tableAfterMove.openedCards = [];
+    tableAfterMove.playerIndicesRemovedInThisHand = [];
+    player1.chipsInPocket = 320
+    player1.state = PlayerState.Init
+    player1.cards = []
+    player1.cards.push(new Card("K", CardSuite.s));
+    player1.cards.push(new Card("8", CardSuite.s));
+    player2.state = PlayerState.Init
+    player2.cards = []
+    player2.cards.push(new Card("Q", CardSuite.s));
+    player2.cards.push(new Card("7", CardSuite.s));
+    player3.state = PlayerState.Init
+    player3.cards = []
+    player3.cards.push(new Card("J", CardSuite.s));
+    player3.cards.push(new Card("6", CardSuite.s));
+    player4.state = PlayerState.Init
+    player4.cards = []
+    player4.cards.push(new Card("10", CardSuite.s));
+    player4.cards.push(new Card("5", CardSuite.s));
+    player5.state = PlayerState.Init
+    player5.cards = []
+    player5.cards.push(new Card("9", CardSuite.s));
+    player5.cards.push(new Card("4", CardSuite.s));
+    tableAfterMove.addPlayerToTheTable(player1);
+    tableAfterMove.addPlayerToTheTable(player2);
+    tableAfterMove.addPlayerToTheTable(player3);
+    tableAfterMove.addPlayerToTheTable(player4);
+    tableAfterMove.addPlayerToTheTable(player5);
+    pot = new Pot();
+    pot.currentPotBetAmount = 0;
+    pot.playersContributions = [0,0,0,0,0];
+    pot.playersInvolved.push(player1);
+    pot.playersInvolved.push(player2);
+    pot.playersInvolved.push(player3);
+    pot.playersInvolved.push(player4);
+    pot.playersInvolved.push(player5);
+    pot.totalAmount = 0;
+    tableAfterMove.potArray.push(pot);
+    tableAfterMove.roundStartIndex = 1;
+    tableAfterMove.smallBlind = 10;
 
-//     expectMove(OK, P2_TURN, tableBeforeMove, player2, 0, tableAfterMove, P2_TURN, NO_ONE_WINS);
-//   });
+    expectMove(OK, P2_TURN, tableBeforeMove, player2, 0, tableAfterMove, P2_TURN, NO_ONE_WINS);
+  });
 
 //   // Only possible when the Royal Flush is on the table
 //   it("Check for end of Round 4 -> Check for Winner -> Conflict of Royal Flush", function() {

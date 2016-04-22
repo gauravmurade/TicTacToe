@@ -105,7 +105,7 @@ module game {
     log.info("Game got updateUI:", params); 
     animationEnded = false;
     move = params.move; 
-    state = move.stateAfterMove;
+    state = move.stateAfterMove; 
         
     if (!state) {
       console.log("getInitialState() call. Should happen twice including the fake!");

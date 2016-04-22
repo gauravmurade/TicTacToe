@@ -1170,7 +1170,7 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
             return false;
         }
         else {
-            return true;
+            return true; 
         }
     }    
     
