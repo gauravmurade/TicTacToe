@@ -104,7 +104,7 @@ module game {
   function updateUI(params: IUpdateUI): void { 
     log.info("Game got updateUI:", params); 
     animationEnded = false;
-    move = params.move;
+    move = params.move; 
     state = move.stateAfterMove;
         
     if (!state) {

@@ -847,16 +847,17 @@ var gameLogic;
     }
     gameLogic.adjustPots = adjustPots;
     function checkMoveOk(stateTransition) {
-        // We can assume that turnIndexBeforeMove and stateBeforeMove are legal, and we need to verify that the move is OK.
-        var turnIndexBeforeMove = stateTransition.turnIndexBeforeMove;
-        var stateBeforeMove = stateTransition.stateBeforeMove;
-        var move = stateTransition.move;
-        var deltaValue = stateTransition.move.stateAfterMove.delta;
-        var currentPlayer = deltaValue.currentPlayer;
-        var amountAdded = deltaValue.amountAdded;
-        var expectedMove = createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove);
-        if (!angular.equals(move, expectedMove)) {
-        }
+        // // We can assume that turnIndexBeforeMove and stateBeforeMove are legal, and we need to verify that the move is OK.
+        // let turnIndexBeforeMove = stateTransition.turnIndexBeforeMove;
+        // let stateBeforeMove: IState = stateTransition.stateBeforeMove;
+        // let move: IMove = stateTransition.move;
+        // let deltaValue: TableDelta = stateTransition.move.stateAfterMove.delta;
+        // let currentPlayer = deltaValue.currentPlayer;
+        // let amountAdded = deltaValue.amountAdded;
+        // let expectedMove = createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove);
+        // if (!angular.equals(move, expectedMove)) {
+        //     throw new Error("Expected move=" + angular.toJson(expectedMove, true) + ", but got stateTransition=" + angular.toJson(stateTransition, true))
+        // }
     }
     gameLogic.checkMoveOk = checkMoveOk;
     function canSmallBlindOrNot(tableAfterMove) {

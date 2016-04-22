@@ -1047,25 +1047,25 @@ module gameLogic {
                     newPotObject.addContribution(playersBeingShifted[j], playersContributionsBeingShifted[j]);
                 }
                 
-                tableAfterMove.potArray.push(newPotObject);
+                tableAfterMove.potArray.push(newPotObject); 
             }
         }
     }
     export function checkMoveOk(stateTransition: IStateTransition): void {
 
-        // We can assume that turnIndexBeforeMove and stateBeforeMove are legal, and we need to verify that the move is OK.
-        let turnIndexBeforeMove = stateTransition.turnIndexBeforeMove;
-        let stateBeforeMove: IState = stateTransition.stateBeforeMove;
-        let move: IMove = stateTransition.move;
-        let deltaValue: TableDelta = stateTransition.move.stateAfterMove.delta;
-        let currentPlayer = deltaValue.currentPlayer;
-        let amountAdded = deltaValue.amountAdded;
+        // // We can assume that turnIndexBeforeMove and stateBeforeMove are legal, and we need to verify that the move is OK.
+        // let turnIndexBeforeMove = stateTransition.turnIndexBeforeMove;
+        // let stateBeforeMove: IState = stateTransition.stateBeforeMove;
+        // let move: IMove = stateTransition.move;
+        // let deltaValue: TableDelta = stateTransition.move.stateAfterMove.delta;
+        // let currentPlayer = deltaValue.currentPlayer;
+        // let amountAdded = deltaValue.amountAdded;
     
-        let expectedMove = createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove);
+        // let expectedMove = createMove(stateBeforeMove, currentPlayer, amountAdded, turnIndexBeforeMove);
     
-        if (!angular.equals(move, expectedMove)) {
-//            throw new Error("Expected move=" + angular.toJson(expectedMove, true) + ", but got stateTransition=" + angular.toJson(stateTransition, true))
-        }
+        // if (!angular.equals(move, expectedMove)) {
+        //     throw new Error("Expected move=" + angular.toJson(expectedMove, true) + ", but got stateTransition=" + angular.toJson(stateTransition, true))
+        // }
     }
 
 export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
