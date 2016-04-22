@@ -118,7 +118,7 @@ module game {
 // ******************************************************************************************** //
 
       let tempPlayer: Player = new Player(params.move.stateAfterMove.delta.currentPlayer.id,
-        params.move.stateAfterMove.delta.currentPlayer.name); 
+        params.move.stateAfterMove.delta.currentPlayer.name);
 
       tempPlayer.state = params.move.stateAfterMove.delta.currentPlayer.state;
       tempPlayer.chipsInPocket = params.move.stateAfterMove.delta.currentPlayer.chipsInPocket;
@@ -163,7 +163,7 @@ module game {
         tempPotArray.push(newPot);
       }
 
-      for( let i: number = 0; i < params.move.stateAfterMove.table.winners.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.table.winners && (i < params.move.stateAfterMove.table.winners.length); i++) {
         let newWinner: Player = new Player(params.move.stateAfterMove.table.winners[i].id,
           params.move.stateAfterMove.table.winners[i].name);
         newWinner.state = params.move.stateAfterMove.table.winners[i].state;

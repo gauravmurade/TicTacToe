@@ -43,7 +43,7 @@ class Player {
         
         let cardString: string = "";
         
-        for( let i: number = 0; i<this.cards.length; i++) {
+        for( let i: number = 0; i < this.cards.length; i++) { 
             cardString = cardString + this.cards[i].cardNumber + CardSuite[this.cards[i].cardType] + " "; 
         }
 //        console.log("Hand Cards: " + cardString);

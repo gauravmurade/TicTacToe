@@ -134,7 +134,7 @@ var game;
                 newPot.playersContributions = params.move.stateAfterMove.table.potArray[i].playersContributions;
                 tempPotArray.push(newPot);
             }
-            for (var i = 0; i < params.move.stateAfterMove.table.winners.length; i++) {
+            for (var i = 0; params.move.stateAfterMove.table.winners && (i < params.move.stateAfterMove.table.winners.length); i++) {
                 var newWinner = new Player(params.move.stateAfterMove.table.winners[i].id, params.move.stateAfterMove.table.winners[i].name);
                 newWinner.state = params.move.stateAfterMove.table.winners[i].state;
                 newWinner.chipsInPocket = params.move.stateAfterMove.table.winners[i].chipsInPocket;
