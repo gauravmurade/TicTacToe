@@ -1628,26 +1628,65 @@ var game;
         }
         else {
             // Adding code to recreate instances and regain access to instance methods lost during data transfer over network
-            // ********************************************************************************************//
+            // Beware : This code block is trippy. Enter at your own risk.
+            // ******************************************************************************************** //
             var tempPlayer = new Player(params.move.stateAfterMove.delta.currentPlayer.id, params.move.stateAfterMove.delta.currentPlayer.name);
             tempPlayer.state = params.move.stateAfterMove.delta.currentPlayer.state;
             tempPlayer.chipsInPocket = params.move.stateAfterMove.delta.currentPlayer.chipsInPocket;
             tempPlayer.currentBet = params.move.stateAfterMove.delta.currentPlayer.currentBet;
             tempPlayer.cards = params.move.stateAfterMove.delta.currentPlayer.cards;
             var tempTable = new TableSetup(params.playersInfo.length);
-            tempTable.playerList = params.move.stateAfterMove.table.playerList;
+            var tempPlayerList = [];
+            var tempPotArray = [];
+            var tempWinners = [];
+            for (var i = 0; i < params.move.stateAfterMove.table.playerList.length; i++) {
+                var newPlayer = new Player(params.move.stateAfterMove.table.playerList[i].id, params.move.stateAfterMove.table.playerList[i].name);
+                newPlayer.state = params.move.stateAfterMove.table.playerList[i].state;
+                newPlayer.chipsInPocket = params.move.stateAfterMove.table.playerList[i].chipsInPocket;
+                newPlayer.currentBet = params.move.stateAfterMove.table.playerList[i].currentBet;
+                newPlayer.cards = params.move.stateAfterMove.table.playerList[i].cards;
+                tempPlayerList.push(newPlayer);
+            }
+            for (var i = 0; i < params.move.stateAfterMove.table.potArray.length; i++) {
+                var newPot = new Pot();
+                newPot.hands = params.move.stateAfterMove.table.potArray[i].hands;
+                newPot.handRanks = params.move.stateAfterMove.table.potArray[i].handRanks;
+                newPot.currentPotBetAmount = params.move.stateAfterMove.table.potArray[i].currentPotBetAmount;
+                newPot.totalAmount = params.move.stateAfterMove.table.potArray[i].totalAmount;
+                var tempPlayersInvolved = [];
+                for (var j = 0; j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length; j++) {
+                    var newPlayer = new Player(params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id, params.move.stateAfterMove.table.potArray[i].playersInvolved[j].name);
+                    newPlayer.state = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].state;
+                    newPlayer.chipsInPocket = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].chipsInPocket;
+                    newPlayer.currentBet = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].currentBet;
+                    newPlayer.cards = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].cards;
+                    tempPlayersInvolved.push(newPlayer);
+                }
+                newPot.playersInvolved = tempPlayersInvolved;
+                newPot.playersContributions = params.move.stateAfterMove.table.potArray[i].playersContributions;
+                tempPotArray.push(newPot);
+            }
+            for (var i = 0; i < params.move.stateAfterMove.table.winners.length; i++) {
+                var newWinner = new Player(params.move.stateAfterMove.table.winners[i].id, params.move.stateAfterMove.table.winners[i].name);
+                newWinner.state = params.move.stateAfterMove.table.winners[i].state;
+                newWinner.chipsInPocket = params.move.stateAfterMove.table.winners[i].chipsInPocket;
+                newWinner.currentBet = params.move.stateAfterMove.table.winners[i].currentBet;
+                newWinner.cards = params.move.stateAfterMove.table.winners[i].cards;
+                tempWinners.push(newWinner);
+            }
+            tempTable.playerList = tempPlayerList;
             tempTable.deck = params.move.stateAfterMove.table.deck;
             tempTable.openedCards = params.move.stateAfterMove.table.openedCards;
             tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
             tempTable.dealerIndex = params.move.stateAfterMove.table.dealerIndex;
             tempTable.currentPlayerIndex = params.move.stateAfterMove.table.currentPlayerIndex;
-            tempTable.potArray = params.move.stateAfterMove.table.potArray;
+            tempTable.potArray = tempPotArray;
             tempTable.smallBlind = params.move.stateAfterMove.table.smallBlind;
             tempTable.bigBlind = params.move.stateAfterMove.table.bigBlind;
             tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
             tempTable.currentCallAmount = params.move.stateAfterMove.table.currentCallAmount;
             tempTable.playerIndicesRemovedInThisHand = params.move.stateAfterMove.table.playerIndicesRemovedInThisHand;
-            tempTable.winners = params.move.stateAfterMove.table.winners;
+            tempTable.winners = tempWinners;
             game.move.stateAfterMove.delta.currentPlayer = tempPlayer;
             game.move.stateAfterMove.table = tempTable;
         }
