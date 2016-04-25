@@ -366,13 +366,13 @@ function initializeTableDeck() {
             suiteNumber++;
         }
     }
-    // //Shuffle the Deck.
-    // for (let i : number = cardDeck.length - 1; i > 0; i--) {
-    //     let j : number = Math.floor(Math.random() * (i + 1));
-    //     let tempCard : Card = cardDeck[i];
-    //     cardDeck[i] = cardDeck[j];
-    //     cardDeck[j] = tempCard;
-    // }
+    //Shuffle the Deck. 
+    for (var i = cardDeck.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tempCard = cardDeck[i];
+        cardDeck[i] = cardDeck[j];
+        cardDeck[j] = tempCard;
+    }
     return cardDeck;
 }
 function distributeCards(table) {
