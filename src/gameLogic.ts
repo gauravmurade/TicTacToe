@@ -496,7 +496,7 @@ function initializeTableDeck() : Card[] {
                         numString = num.toString();
                         break;
                     }
-        }
+        } 
         
            
         cardDeck.push(new Card(numString, suite));
@@ -506,13 +506,13 @@ function initializeTableDeck() : Card[] {
         }
     }
  
-    // //Shuffle the Deck.
-    // for (let i : number = cardDeck.length - 1; i > 0; i--) {
-    //     let j : number = Math.floor(Math.random() * (i + 1));
-    //     let tempCard : Card = cardDeck[i];
-    //     cardDeck[i] = cardDeck[j];
-    //     cardDeck[j] = tempCard;
-    // }
+    //Shuffle the Deck.
+    for (let i : number = cardDeck.length - 1; i > 0; i--) {
+        let j : number = Math.floor(Math.random() * (i + 1));
+        let tempCard : Card = cardDeck[i];
+        cardDeck[i] = cardDeck[j];
+        cardDeck[j] = tempCard;
+    }
     
     return cardDeck;
 }

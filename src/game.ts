@@ -455,8 +455,8 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   });
 
 angular.module('myApp')
-    .filter('to_trusted', ['$sce', function($sce){
-        return function(text) {
+    .filter('to_trusted', ['$sce', function($sce : any){
+        return function(text : any) {
             return $sce.trustAsHtml(text);
         };
 }]);
