@@ -4,7 +4,7 @@
 }
 
 @keyframes slowlyAppear {
-  from {opacity: 0.1;}
+  from {opacity: 0;}
   to {opacity: 1;}
 }
 
@@ -46,11 +46,14 @@ td {
   -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.15);
   box-shadow: 0 1px 1px rgba(0,0,0,0.15);
   cursor: default;
+  
+  transition: 0.7s;
+	transform-style: preserve-3d;
 }
 .card:before,
 .card:after {
   position: absolute;
-  font-size: 0.7rem;
+  font-size: 1vmin;
   text-align: center;
   line-height: 0.7rem;
   font-family: 'Ubuntu Condensed', sans-serif;
@@ -343,4 +346,20 @@ td {
     line-height:20px;
     text-align:center;
     background:#990000
-    }
+}
+
+.smallCard { 
+  font-size: 4vmin; 
+}
+
+.smallCard.smallSpades,
+.smallCard.smallClubs {
+  color:black;
+}
+
+.smallCard.smallDiamonds,
+.smallCard.smallHearts {
+  color:red;
+}
+
+

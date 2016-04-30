@@ -96,23 +96,21 @@ var game;
         }
         else {
             // Adding code to recreate instances and regain access to instance methods lost during data transfer over network
+            // Careful consideration to maintain references to players!
             // Beware : This code block is trippy. Enter at your own risk.
             // ******************************************************************************************** //
-            var tempPlayer = new Player(params.move.stateAfterMove.delta.currentPlayer.id, params.move.stateAfterMove.delta.currentPlayer.name);
-            tempPlayer.state = params.move.stateAfterMove.delta.currentPlayer.state;
-            tempPlayer.chipsInPocket = params.move.stateAfterMove.delta.currentPlayer.chipsInPocket;
-            tempPlayer.currentBet = params.move.stateAfterMove.delta.currentPlayer.currentBet;
-            tempPlayer.cards = params.move.stateAfterMove.delta.currentPlayer.cards;
             var tempTable = new TableSetup(params.playersInfo.length);
             var tempPlayerList = [];
             var tempPotArray = [];
-            var tempWinners = [];
+            var tempWinnersOfPreviousHand = [];
             for (var i = 0; i < params.move.stateAfterMove.table.playerList.length; i++) {
                 var newPlayer = new Player(params.move.stateAfterMove.table.playerList[i].id, params.move.stateAfterMove.table.playerList[i].name);
                 newPlayer.state = params.move.stateAfterMove.table.playerList[i].state;
                 newPlayer.chipsInPocket = params.move.stateAfterMove.table.playerList[i].chipsInPocket;
                 newPlayer.currentBet = params.move.stateAfterMove.table.playerList[i].currentBet;
                 newPlayer.cards = params.move.stateAfterMove.table.playerList[i].cards;
+                newPlayer.winningCards = params.move.stateAfterMove.table.playerList[i].winningCards;
+                newPlayer.winningCategory = params.move.stateAfterMove.table.playerList[i].winningCategory;
                 tempPlayerList.push(newPlayer);
             }
             for (var i = 0; i < params.move.stateAfterMove.table.potArray.length; i++) {
@@ -123,24 +121,28 @@ var game;
                 newPot.totalAmount = params.move.stateAfterMove.table.potArray[i].totalAmount;
                 var tempPlayersInvolved = [];
                 for (var j = 0; j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length; j++) {
-                    var newPlayer = new Player(params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id, params.move.stateAfterMove.table.potArray[i].playersInvolved[j].name);
-                    newPlayer.state = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].state;
-                    newPlayer.chipsInPocket = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].chipsInPocket;
-                    newPlayer.currentBet = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].currentBet;
-                    newPlayer.cards = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].cards;
-                    tempPlayersInvolved.push(newPlayer);
+                    for (var k = 0; k < tempPlayerList.length; k++) {
+                        if (params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id == tempPlayerList[k].id) {
+                            tempPlayersInvolved.push(tempPlayerList[k]);
+                            break;
+                        }
+                    }
                 }
                 newPot.playersInvolved = tempPlayersInvolved;
                 newPot.playersContributions = params.move.stateAfterMove.table.potArray[i].playersContributions;
                 tempPotArray.push(newPot);
             }
-            for (var i = 0; params.move.stateAfterMove.table.winners && (i < params.move.stateAfterMove.table.winners.length); i++) {
-                var newWinner = new Player(params.move.stateAfterMove.table.winners[i].id, params.move.stateAfterMove.table.winners[i].name);
-                newWinner.state = params.move.stateAfterMove.table.winners[i].state;
-                newWinner.chipsInPocket = params.move.stateAfterMove.table.winners[i].chipsInPocket;
-                newWinner.currentBet = params.move.stateAfterMove.table.winners[i].currentBet;
-                newWinner.cards = params.move.stateAfterMove.table.winners[i].cards;
-                tempWinners.push(newWinner);
+            for (var i = 0; i < params.move.stateAfterMove.table.winnersOfPreviousHand.length; i++) {
+                var tempWinnerOfPreviousHand = [];
+                for (var j = 0; j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length; j++) {
+                    for (var k = 0; k < tempPlayerList.length; k++) {
+                        if (params.move.stateAfterMove.table.winnersOfPreviousHand[i][j].id == tempPlayerList[k].id) {
+                            tempWinnerOfPreviousHand.push(tempPlayerList[k]);
+                            break;
+                        }
+                    }
+                }
+                tempWinnersOfPreviousHand.push(tempWinnerOfPreviousHand);
             }
             tempTable.playerList = tempPlayerList;
             tempTable.deck = params.move.stateAfterMove.table.deck;
@@ -148,15 +150,46 @@ var game;
             tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
             tempTable.dealerIndex = params.move.stateAfterMove.table.dealerIndex;
             tempTable.currentPlayerIndex = params.move.stateAfterMove.table.currentPlayerIndex;
+            tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
             tempTable.potArray = tempPotArray;
             tempTable.smallBlind = params.move.stateAfterMove.table.smallBlind;
             tempTable.bigBlind = params.move.stateAfterMove.table.bigBlind;
-            tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
             tempTable.currentCallAmount = params.move.stateAfterMove.table.currentCallAmount;
             tempTable.playerIndicesRemovedInThisHand = params.move.stateAfterMove.table.playerIndicesRemovedInThisHand;
-            tempTable.winners = tempWinners;
-            game.move.stateAfterMove.delta.currentPlayer = tempPlayer;
-            game.move.stateAfterMove.table = tempTable;
+            tempTable.winnersOfPreviousHand = tempWinnersOfPreviousHand;
+            params.move.stateAfterMove.table = tempTable;
+            for (var k = 0; k < tempPlayerList.length; k++) {
+                if (tempPlayerList[k].id == params.move.stateAfterMove.delta.currentPlayer.id) {
+                    params.move.stateAfterMove.delta.currentPlayer = tempPlayerList[k];
+                    break;
+                }
+            }
+            var tempWinnersList = [];
+            for (var i = 0; i < params.move.stateAfterMove.winnersList.length; i++) {
+                var tempWinnerList = [];
+                for (var j = 0; j < params.move.stateAfterMove.winnersList[i].length; j++) {
+                    for (var k = 0; k < tempPlayerList.length; k++) {
+                        if (params.move.stateAfterMove.winnersList[i][j].id == tempPlayerList[k].id) {
+                            tempWinnerList.push(tempPlayerList[k]);
+                            break;
+                        }
+                    }
+                }
+                tempWinnersList.push(tempWinnerList);
+            }
+            params.move.stateAfterMove.winnersList = tempWinnersList;
+            var tempPlayersAfterHandOver = [];
+            for (var i = 0; i < params.move.stateAfterMove.playersAfterHandOver.length; i++) {
+                for (var j = 0; j < tempPlayerList.length; j++) {
+                    if (params.move.stateAfterMove.playersAfterHandOver[i].id == tempPlayerList[j].id) {
+                        tempPlayersAfterHandOver.push(tempPlayerList[j]);
+                        break;
+                    }
+                }
+            }
+            params.move.stateAfterMove.playersAfterHandOver = tempPlayersAfterHandOver;
+            game.move = params.move;
+            game.state = game.move.stateAfterMove;
         }
         game.canMakeMove = game.move.turnIndexAfterMove >= 0 &&
             params.yourPlayerIndex === game.move.turnIndexAfterMove; // it's my turn
@@ -171,6 +204,9 @@ var game;
             yourPlayerCards_card2 = game.state.table.playerList[params.yourPlayerIndex].cards[1];
             game.class_yourPlayerCards_card1 = getCardClass(yourPlayerCards_card1);
             game.class_yourPlayerCards_card2 = getCardClass(yourPlayerCards_card2);
+        }
+        if (game.state.winnersList.length < 0) {
+            game.openedCardsList = game.state.table.openedCards;
         }
         /*************************************************************************/
         // Is it the computer's turn?
@@ -202,15 +238,6 @@ var game;
         }
         try {
             console.log("cellClicked STATE BEFORE MAKE MOVE: ", game.state);
-            //if small blind is not yet set, set it and remove the button from the dispaly
-            //to remove the button, i use  shouldShowSmallBlind
-            // if((action  === 'Small') && (shouldShowSmallBlind == true)){
-            //     shouldShowSmallBlind = false;
-            //     shouldShowBigBlind = true;
-            // }
-            // if((action  === 'Big') && (shouldShowBigBlind == true)){
-            //     shouldShowBigBlind = false;
-            // }
             //update the closedCards size
             game.oldOpenCardsSize = game.state.table.openedCards.length;
             game.state.table.playerList[game.temp_yourPlayerIndex].state = getPlayerStateBasedOnAction(action);
@@ -244,26 +271,7 @@ var game;
     //        state.delta &&
     //        state.delta.row === row && state.delta.col === col;
     //  }
-    /********RIDHIMAN ADDED*****/
-    function getPlayerOptions() {
-        /**supposed to reset theflags basedon function calls made in game logic,
-         * has to call functions in game logic ti check thing slike the pot anmd all
-         * and decide the options it can show to the user
-         */
-    }
-    //  function showWinners(params: IUpdateUI){
-    //      //set the flag to show a different div which shows the player's cards, and the winning hands
-    //       console.log("should show winners");
-    //       setTimeout(function() {
-    //           console.log();
-    //            shouldShowSmallBlind = true;
-    //            game.state.table.winners = null;
-    //            params.stateBeforeMove.table.winners = null;
-    //            console.log();
-    //            updateUI(params);
-    //            alert("time out done, should have shown winners");
-    //       },9000);
-    //      }
+    /****** */
     function getPlayerStateBasedOnAction(action) {
         switch (action) {
             case "Raise": return PlayerState.Raise;
@@ -286,6 +294,9 @@ var game;
         var amount = document.getElementById('raiseAmount').value;
         if (amount === '') {
             amount = '0';
+        }
+        if (amount == '0') {
+            return;
         }
         game.cellClicked("Raise", +amount);
         return;
@@ -340,20 +351,43 @@ var game;
     }
     game.getCardRank = getCardRank;
     function shouldShowButton(action) {
-        return true;
-        /*
-                 switch(action){
-                  case "Raise" :return true;//for now returning true, check function again
-                  case "Fold"  :return gameLogic.canFoldOrNot(state.table);
-                  case "Call"  :return gameLogic.canCallOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
-                  case "AllIn" :return gameLogic.canAllInOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
-                  case "Check" :return gameLogic.canCheckOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
-                  case "Small" :return gameLogic.canSmallBlindOrNot(state.table);
-                  case "Big"   :return gameLogic.canBigBlindOrNot(state.table);
-                  default:  return true;
-        */
+        switch (action) {
+            case "Raise": return gameLogic.canRaiseOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex], 0); //for now returning true, check function again
+            case "Fold": return gameLogic.canFoldOrNot(game.state.table);
+            case "Call": return gameLogic.canCallOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
+            case "AllIn": return gameLogic.canAllInOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
+            case "Check": return gameLogic.canCheckOrNot(game.state.table, game.state.table.playerList[game.temp_yourPlayerIndex]);
+            case "Small": return gameLogic.canSmallBlindOrNot(game.state.table);
+            case "Big": return gameLogic.canBigBlindOrNot(game.state.table);
+            default: return true;
+        }
     }
     game.shouldShowButton = shouldShowButton;
+    // export function getNumber(size: number) : Array<number>[]{
+    //   return new Array(size);
+    // }
+    function getSmallCardDisplayValue(card) {
+        var displayValue;
+        displayValue = card.cardNumber;
+        switch (card.cardType) {
+            case 0: return displayValue + "&clubs;";
+            case 1: return displayValue + "&diams;";
+            case 2: return displayValue + "&hearts;";
+            case 3: return displayValue + "&spades;";
+            default: return " ";
+        }
+    }
+    game.getSmallCardDisplayValue = getSmallCardDisplayValue;
+    function getSmallCardClass(card) {
+        switch (card.cardType) {
+            case 0: return "smallCard smallClubs";
+            case 1: return "smallCard smallDiamonds";
+            case 2: return "smallCard smallHearts";
+            case 3: return "smallCard smallSpades";
+            default: return " ";
+        }
+    }
+    game.getSmallCardClass = getSmallCardClass;
     /***************************/
     function clickedOnModal(evt) {
         if (evt.target === evt.currentTarget) {
@@ -370,4 +404,10 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     $rootScope['game'] = game;
     game.init();
 });
+angular.module('myApp')
+    .filter('to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        };
+    }]);
 //# sourceMappingURL=game.js.map

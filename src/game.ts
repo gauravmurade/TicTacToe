@@ -25,6 +25,7 @@ module game {
   //used to animate the opening of cards on the table
   //updated each time cellClicked is called, but before the move is sent  
   export let oldOpenCardsSize:number = 0;
+  export let openedCardsList: Card[];
 
 
 /**cards of yourIndex */
@@ -114,21 +115,14 @@ module game {
     else {
       
 // Adding code to recreate instances and regain access to instance methods lost during data transfer over network
+// Careful consideration to maintain references to players!
 // Beware : This code block is trippy. Enter at your own risk.
 // ******************************************************************************************** //
 
-      let tempPlayer: Player = new Player(params.move.stateAfterMove.delta.currentPlayer.id,
-        params.move.stateAfterMove.delta.currentPlayer.name);
-
-      tempPlayer.state = params.move.stateAfterMove.delta.currentPlayer.state;
-      tempPlayer.chipsInPocket = params.move.stateAfterMove.delta.currentPlayer.chipsInPocket;
-      tempPlayer.currentBet = params.move.stateAfterMove.delta.currentPlayer.currentBet;
-      tempPlayer.cards = params.move.stateAfterMove.delta.currentPlayer.cards;
-          
       let tempTable: Table = new TableSetup(params.playersInfo.length);
       let tempPlayerList: Player[] = [];
       let tempPotArray: Pot[] = [];
-      let tempWinners: Player[] =[];
+      let tempWinnersOfPreviousHand: Player[][] = [];
 
       for( let i: number = 0; i < params.move.stateAfterMove.table.playerList.length; i++) {
         let newPlayer: Player = new Player(params.move.stateAfterMove.table.playerList[i].id,
@@ -137,6 +131,8 @@ module game {
         newPlayer.chipsInPocket = params.move.stateAfterMove.table.playerList[i].chipsInPocket;
         newPlayer.currentBet = params.move.stateAfterMove.table.playerList[i].currentBet;
         newPlayer.cards = params.move.stateAfterMove.table.playerList[i].cards;
+        newPlayer.winningCards = params.move.stateAfterMove.table.playerList[i].winningCards;
+        newPlayer.winningCategory = params.move.stateAfterMove.table.playerList[i].winningCategory;
         tempPlayerList.push(newPlayer);
       }
 
@@ -149,28 +145,30 @@ module game {
 
         let tempPlayersInvolved: Player[] = [];
         for( let j: number = 0; j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length; j++) {
-          let newPlayer: Player = new Player(params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id,
-            params.move.stateAfterMove.table.potArray[i].playersInvolved[j].name);
-          newPlayer.state = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].state;
-          newPlayer.chipsInPocket = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].chipsInPocket;
-          newPlayer.currentBet = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].currentBet;
-          newPlayer.cards = params.move.stateAfterMove.table.potArray[i].playersInvolved[j].cards;
-          tempPlayersInvolved.push(newPlayer);
+          for( let k: number = 0; k < tempPlayerList.length; k++) {
+            if(params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id == tempPlayerList[k].id) {          
+              tempPlayersInvolved.push(tempPlayerList[k]);
+              break;
+            }
+          }
         }
 
         newPot.playersInvolved = tempPlayersInvolved;
         newPot.playersContributions = params.move.stateAfterMove.table.potArray[i].playersContributions;
         tempPotArray.push(newPot);
-      }
+      }      
 
-      for( let i: number = 0; params.move.stateAfterMove.table.winners && (i < params.move.stateAfterMove.table.winners.length); i++) {
-        let newWinner: Player = new Player(params.move.stateAfterMove.table.winners[i].id,
-          params.move.stateAfterMove.table.winners[i].name);
-        newWinner.state = params.move.stateAfterMove.table.winners[i].state;
-        newWinner.chipsInPocket = params.move.stateAfterMove.table.winners[i].chipsInPocket;
-        newWinner.currentBet = params.move.stateAfterMove.table.winners[i].currentBet;
-        newWinner.cards = params.move.stateAfterMove.table.winners[i].cards;
-        tempWinners.push(newWinner);
+      for( let i: number = 0; i < params.move.stateAfterMove.table.winnersOfPreviousHand.length; i++) {
+        let tempWinnerOfPreviousHand: Player[] = []; 
+        for( let j: number = 0; j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length; j++) {
+          for( let k: number = 0; k < tempPlayerList.length; k++) {
+            if(params.move.stateAfterMove.table.winnersOfPreviousHand[i][j].id == tempPlayerList[k].id) {          
+              tempWinnerOfPreviousHand.push(tempPlayerList[k]);
+              break;
+            }
+          }
+        }
+        tempWinnersOfPreviousHand.push(tempWinnerOfPreviousHand);
       }
 
       tempTable.playerList = tempPlayerList;
@@ -179,17 +177,52 @@ module game {
       tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
       tempTable.dealerIndex = params.move.stateAfterMove.table.dealerIndex;
       tempTable.currentPlayerIndex = params.move.stateAfterMove.table.currentPlayerIndex;
+      tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
       tempTable.potArray = tempPotArray;
       tempTable.smallBlind = params.move.stateAfterMove.table.smallBlind;
       tempTable.bigBlind = params.move.stateAfterMove.table.bigBlind;
-      tempTable.roundStartIndex = params.move.stateAfterMove.table.roundStartIndex;
       tempTable.currentCallAmount = params.move.stateAfterMove.table.currentCallAmount;
       tempTable.playerIndicesRemovedInThisHand = params.move.stateAfterMove.table.playerIndicesRemovedInThisHand;
-      tempTable.winners = tempWinners;
+      tempTable.winnersOfPreviousHand = tempWinnersOfPreviousHand;
   
-      move.stateAfterMove.delta.currentPlayer = tempPlayer;
-      move.stateAfterMove.table = tempTable;
+      params.move.stateAfterMove.table = tempTable;
+      
+      for( let k: number = 0; k < tempPlayerList.length; k++) {
+        if(tempPlayerList[k].id == params.move.stateAfterMove.delta.currentPlayer.id) {          
+          params.move.stateAfterMove.delta.currentPlayer = tempPlayerList[k];
+          break;
+        }
+      }                
     
+      let tempWinnersList: Player[][] = []
+      for( let i: number = 0; i < params.move.stateAfterMove.winnersList.length; i++) {
+        let tempWinnerList: Player[] = [];
+        for( let j: number = 0; j < params.move.stateAfterMove.winnersList[i].length; j++) {
+          for( let k: number = 0; k < tempPlayerList.length; k++) {
+            if(params.move.stateAfterMove.winnersList[i][j].id == tempPlayerList[k].id) {          
+              tempWinnerList.push(tempPlayerList[k]);
+              break;
+            }
+          }
+        }
+        tempWinnersList.push(tempWinnerList);
+      }
+      params.move.stateAfterMove.winnersList = tempWinnersList;
+
+      let tempPlayersAfterHandOver: Player[] = []
+      for( let i: number = 0; i < params.move.stateAfterMove.playersAfterHandOver.length; i++) {
+        for( let j: number = 0; j < tempPlayerList.length; j++) {
+          if(params.move.stateAfterMove.playersAfterHandOver[i].id == tempPlayerList[j].id) {          
+            tempPlayersAfterHandOver.push(tempPlayerList[j]);
+            break;
+          }
+        }
+      }
+      params.move.stateAfterMove.playersAfterHandOver = tempPlayersAfterHandOver;
+      
+      move = params.move;
+      state = move.stateAfterMove; 
+
 // ******************************************************************************************** //
       
     }
@@ -213,6 +246,9 @@ module game {
 //      console.log("cardsClass YPI" + class_yourPlayerCards_card1 + " " + class_yourPlayerCards_card2);
     }
     
+    if(state.winnersList.length < 0) {
+    openedCardsList = state.table.openedCards;
+    }
     /*************************************************************************/
     
     // Is it the computer's turn?
@@ -245,17 +281,6 @@ module game {
     }
     try {
         console.log("cellClicked STATE BEFORE MAKE MOVE: ",state);
-        
-      //if small blind is not yet set, set it and remove the button from the dispaly
-      //to remove the button, i use  shouldShowSmallBlind
-      // if((action  === 'Small') && (shouldShowSmallBlind == true)){
-      //     shouldShowSmallBlind = false;
-      //     shouldShowBigBlind = true;
-      // }
-      // if((action  === 'Big') && (shouldShowBigBlind == true)){
-      //     shouldShowBigBlind = false;
-      // }
-      
       //update the closedCards size
       oldOpenCardsSize = state.table.openedCards.length;
       
@@ -291,30 +316,7 @@ module game {
   //        state.delta.row === row && state.delta.col === col;
   //  }
 
-
-  /********RIDHIMAN ADDED*****/
-  
-  function getPlayerOptions(){
-    /**supposed to reset theflags basedon function calls made in game logic,
-     * has to call functions in game logic ti check thing slike the pot anmd all 
-     * and decide the options it can show to the user
-     */
-  }
-  //  function showWinners(params: IUpdateUI){
-  //      //set the flag to show a different div which shows the player's cards, and the winning hands
-  //       console.log("should show winners");
-  //       setTimeout(function() {
-  //           console.log();
-  //            shouldShowSmallBlind = true;
-  //            game.state.table.winners = null;
-  //            params.stateBeforeMove.table.winners = null;
-  //            console.log();
-  //            updateUI(params);
-  //            alert("time out done, should have shown winners");
-  //       },9000);
-        
-  //      }
-       
+/****** */       
    export function getPlayerStateBasedOnAction(action:string): PlayerState{
      switch(action){
          case "Raise" :return PlayerState.Raise;
@@ -336,6 +338,9 @@ module game {
        let amount: string = (<HTMLInputElement>document.getElementById('raiseAmount')).value;
        if (amount === '') {
            amount = '0';
+       }
+       if(amount == '0'){
+         return;
        }
         game.cellClicked("Raise", +amount);
        return;
@@ -391,10 +396,9 @@ module game {
     }
     
     export function shouldShowButton(action: string): boolean{
-         return true;
-/*
+
          switch(action){
-          case "Raise" :return true;//for now returning true, check function again
+          case "Raise" :return gameLogic.canRaiseOrNot(state.table,state.table.playerList[temp_yourPlayerIndex], 0);//for now returning true, check function again
           case "Fold"  :return gameLogic.canFoldOrNot(state.table);
           case "Call"  :return gameLogic.canCallOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
           case "AllIn" :return gameLogic.canAllInOrNot(state.table, state.table.playerList[temp_yourPlayerIndex]);
@@ -402,8 +406,36 @@ module game {
           case "Small" :return gameLogic.canSmallBlindOrNot(state.table);
           case "Big"   :return gameLogic.canBigBlindOrNot(state.table);
           default:  return true;
-*/
+
         }
+    }
+    
+// export function getNumber(size: number) : Array<number>[]{
+//   return new Array(size);
+// }
+
+export function getSmallCardDisplayValue(card: Card): string {
+  let displayValue:string;
+  displayValue = card.cardNumber;
+  switch (card.cardType) {
+           case 0: return displayValue + "&clubs;";
+           case 1: return displayValue + "&diams;";
+           case 2: return displayValue + "&hearts;";
+           case 3: return displayValue + "&spades;";
+           default: return " ";
+  }
+  
+}
+
+export function getSmallCardClass(card: Card): string{
+  switch (card.cardType) {
+           case 0: return "smallCard smallClubs";
+           case 1: return "smallCard smallDiamonds";
+           case 2: return "smallCard smallHearts";
+           case 3: return "smallCard smallSpades";
+           default: return " ";
+  }
+}
   /***************************/
   export function clickedOnModal(evt: Event) {
     if (evt.target === evt.currentTarget) {
@@ -415,8 +447,16 @@ module game {
   }
 }
 
+
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function () {
     $rootScope['game'] = game;
     game.init();
   });
+
+angular.module('myApp')
+    .filter('to_trusted', ['$sce', function($sce){
+        return function(text) {
+            return $sce.trustAsHtml(text);
+        };
+}]);

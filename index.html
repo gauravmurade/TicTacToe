@@ -48,27 +48,33 @@
   <script src="http://cdnjs.cloudflare.com/ajax/libs/html-inspector/0.8.2/html-inspector.js"></script>
   <!-- /build -->
   
+   <!-- CSS for material design -->
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+
 </head>
 <body ng-cloak>
 <div id="gameArea" style="background-color:#004d00;">
   <!-- Display for regular game -->
   <!-- regular display -->
   <!-- Playe Info -->
-  <div 
+   <div  ng-if = "(game.state.winnersList == null) || (game.state.winnersList.length == 0)"
     style="position:absolute; top:0%; left:0; width:100%; height:30%;">
-    <!-- add an ng if to this div to display info that is not about the current player only-->
-    <div ng-repeat = "row in [0,1]" 
-        style="position:absolute; top:0; left:{{row * 20}}%; width:20%; height:100%; font-size: 1vmax; 
-        {{(row == game.temp_yourPlayerIndex)? 'color: red;' : 'color: white' }}" >
-		<div ng-if = "game.state.table.playerList.length >= row">{{game.state.table.playerList[row].id}}</div>
-        <div ng-if="game.state.table.playerList.length >= row"> Chips:{{game.state.table.playerList[row].chipsInPocket}}</div>
-        <div ng-if = "(game.state.table.playerList.length >= row)
-        && (game.getPlayerStateByIndex(row)!= 'Init')">
-            {{game.getPlayerStateByIndex(row) + ((game.getPlayerStateByIndex(row) ==  'Raise') ? 'd' : 'ed')}}
+    <div ng-repeat = "player in game.state.table.playerList track by $index" 
+        style="position:absolute; top:0; left:{{$index * 20}}%; width:20%; height:100%; font-size: 1vmax; 
+        {{($index == game.temp_yourPlayerIndex)? 'color: red;' : 'color: white' }}" >
+		<div ng-if = "game.state.table.playerList.length >= $index">
+            {{(player.name ==null) ? 
+                 player.id :
+                 player.name}}</div>
+        <div ng-if="game.state.table.playerList.length >= $index"> Chips:{{player.chipsInPocket}}</div>
+        <div ng-if = "(game.state.table.playerList.length >= $index)
+        && (game.getPlayerStateByIndex($index)!= 'Init')">
+            {{game.getPlayerStateByIndex($index) + ((game.getPlayerStateByIndex($index) ==  'Raise') ? 'd' : 'ed')}}
         </div>
-        <div ng-if = "(game.state.table.playerList.length >= row)&&(game.getPlayerStateByIndex(row)!= 'Init' ||game.getPlayerStateByIndex(row)!= 'Fold')">
-         Current Bet: {{game.state.table.playerList[row].currentBet}}</div>
-        <div ng-if = "row == game.state.table.dealerIndex" class="svg-container">
+        <div ng-if = "(game.state.table.playerList.length >= $index)&&(game.getPlayerStateByIndex($index)!= 'Init' ||game.getPlayerStateByIndex($index)!= 'Fold')">
+         Current Bet: {{player.currentBet}}</div>
+        <div ng-if = "$index == game.state.table.dealerIndex" class="svg-container">
 	        <svg version="1.1" viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet" class="svg-content">
 	            <circle fill="#F7941E" stroke="#231F20" stroke-width="10" stroke-miterlimit="10" cx="100" cy="100" r="50" opacity="0.6" />
 	        </svg>
@@ -80,38 +86,37 @@
 			</svg>
         </div>-->
         <!-- show this div only at the end of each round, depending on condition-->
-        <div ng-if ="(game.state.table.playerList.length >= row)
-             && (game.state.table.winners.length > 0)" 
+        <div ng-if ="(game.state.table.playerList.length >= $index)
+             && (game.state.winnersList.length > 0)" 
              style="position:absolute; top:60%; left:2%; width:25%; height:25%;"
-			 ng-class="game.getCardClass(game.state.table.playerList[row].cards[0])">
+			 ng-class="game.getCardClass(player.cards[0])">
 			<svg style="position:absolute; top:0; left:0%; width:100%; height:100%;" 
             class ="face">			
 			</svg>
 		</div>
-        <div ng-if ="(game.state.table.playerList.length >= row)
-            && (game.state.table.winners.length > 0)" 
+        <div ng-if ="(game.state.table.playerList.length >= $index)
+            && (game.state.winnersList.length > 0)" 
              style="position:absolute; top:60%; left:30%; width:25%; height:25%;"
-			 ng-class="game.getCardClass(game.state.table.playerList[row].cards[1])">
+			 ng-class="game.getCardClass(player.cards[1])">
 			<svg style="position:absolute; top:0; left:0%; width:100%; height:100%;" 
             class ="face">			
 			</svg>
 		</div>
     </div>
   </div>
-  
+ 
   <!-- Cards On the table -->
-  <div 
+  <div ng-if = "(game.state.winnersList == null) || (game.state.winnersList.length == 0)"
    style="position:absolute; top:30%; left:0; width:100%; height:30%;">
     <div style="position:absolute; top:0; left:0%; width:10%; height:100%;">
     </div>
     <div style="position:absolute; top:0; left:10%; width:80%; height:100%;">
         <!-- Display open cards on the table if staet is not null and closedCards is not empty-->
 		<div  
-             ng-repeat = "cards in game.state.table.openedCards track by $index" 
-             style="position:absolute; top:0; left:{{$index * 20}}%; width:19%; height:70%;"
+       ng-repeat = "cards in game.state.table.openedCards track by $index" 
+       style="position:absolute; top:0; left:{{$index * 20}}%; width:19%; height:70%;"
 			 ng-class="game.getCardClass(cards)">
-			<svg 
-                style="position:absolute; top:0; left:0%; width:100%; height:100%;" 
+			<svg style="position:absolute; top:0; left:0%; width:100%; height:100%;" 
                 class ="face">			
 			</svg>
 		</div>
@@ -130,9 +135,9 @@
          class="r">
     </div>
   </div>
- 
+  
   <!-- player specific cards -->
-  <div 
+  <div ng-if = "(game.state.winnersList == null) || (game.state.winnersList.length == 0)"
        style="position:absolute; top:30%; left:0; width:100%; height:30%;">
     <div style="position:absolute; top:0; left:0%; width:10%; height:100%;">
     </div>
@@ -162,7 +167,8 @@
          class="r">
      </div>
   </div>
-  <div style="position:absolute; top:60%; left:0; width:100%; height:30%;">
+  <div ng-if = "(game.state.winnersList == null) || (game.state.winnersList.length == 0)"
+      style="position:absolute; top:60%; left:0; width:100%; height:30%;">
     <div style="position:absolute; top:0; left:0%; width:30%; height:100%;"
         class="r">
     </div>
@@ -198,9 +204,49 @@
     </div>
   </div>
   
+  <!-- this div is displayed if the hand has ended.
+   Basically display all the player's cards and their hands-->
+ <div ng-if = "(game.state.playersAfterHandOver.length > 0)">
+  <!-- list of winning players and their cards -->
+  <div  
+       ng-repeat = "row in game.state.playersAfterHandOver track by $index" 
+       style="position:absolute; top:{{2 + (1.5*$index) + (8*$index)}}%; left:5%; width:90%; height:8%; background-color:  #cccccc; font-size: 1.2vmax"
+       class ="card slowlyAppear">
+       <div style="left: 2%; font-weight: bold;">Player: {{(game.state.playersAfterHandOver[$index].name ==null) ? 
+           game.state.playersAfterHandOver[$index].id :
+            game.state.playersAfterHandOver[$index].name}} 
+       </div>
+       <div  style="left: 2%; font-weight: bold;">Hand  : {{game.state.playersAfterHandOver[$index].winningCategory}}</div>  
+         <div ng-repeat="c in game.state.playersAfterHandOver[$index].winningCards track by $index"
+          style="position:absolute; top:5%; left:{{35+(10 * $index)}}%; width:7.5%; height:90%;" 
+          ng-class="game.getSmallCardClass(c)"
+          ng-bind-html="game.getSmallCardDisplayValue(c) | to_trusted">  
+       </div>  
+  </div>
+  
+  <!-- list of pots and their winners -->
+  <div style="position:absolute; top:{{2 + (1.5*game.state.playersAfterHandOver.length) + (8*game.state.playersAfterHandOver.length)}}%;
+   left:5%; height:auto;min-height:8%;max-height: 33%; width: 90% ;background-color: #cccccc; font-size: 1.2vmax;" class="card slowlyAppear">
+   <table >
+    <tr>
+     <th ng-repeat="pot in game.state.winnersList track by $index"       
+         style="left:{{3 + ($index*17 )}}%; width:17%;">
+       Pot {{$index}} won by
+     </th>
+    </tr>
+    <tr>
+     <td ng-repeat="pot in game.state.winnersList track by $index">
+      <div ng-repeat = "winner in pot">
+        {{(winner.name == null) ? winner.id : winner.name}}
+      </div>
+     </td>
+    </tr>
+   </table>
+  </div>
+  
+ </div>
   <!-- buttons-->
-  <div 
-  style="position:absolute; top:90%; left:0; width:100%; height:10%; font-size: 1vmax;">
+  <div style="position:absolute; top:90%; left:0; width:100%; height:10%; font-size: 1vmax;">
     <div ng-if = "game.shouldShowButton('Small')"
         style="position:absolute; top:0; left:10%; width:10%; height:35%;"
         class="card"
@@ -248,10 +294,8 @@
   </div>
 </div>
 
-
-
 <!-- help-->
-  <div id="e2e_test_open_rules_modal" class="help-tip" ng-click="game.isHelpModalShown = true" aria-hidden="true"></div>
+<div id="e2e_test_open_rules_modal" class="help-tip" ng-click="game.isHelpModalShown = true" aria-hidden="true"></div>
 
   <div class="overlayModal" ng-click="game.clickedOnModal($event)"
       ng-class="{zeroOpacity: !game.isHelpModalShown, oneOpacity: game.isHelpModalShown}" aria-hidden="true">
