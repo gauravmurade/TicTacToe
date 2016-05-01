@@ -51,15 +51,35 @@ var game;
     function getTranslations() {
         return {
             RULES_OF_TICTACTOE: {
-                en: "Rules of Poker",
+                en: "Rules of Texas HoldEm Poker",
                 iw: "חוקי המשחק",
             },
             RULES_SLIDE1: {
-                en: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
+                en: "Every player (2-5) is dealt two cards face down – these are called your 'hole cards'. Then there is a round of betting where you can Check, Bet or Fold. This stage of the game is known as pre-flop",
                 iw: "אתה והיריב מסמנים איקס או עיגול כל תור",
             },
             RULES_SLIDE2: {
-                en: "The first to mark a whole row, column or diagonal wins.",
+                en: "When all the betting has finished three shared cards are dealt face up in the middle of the table. This is called the flop.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE3: {
+                en: "After this there is another round of betting, then a fourth shared card – called the turn – is dealt.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE4: {
+                en: "There is another round of betting then a final shared card – called the river – and a final round of betting.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE5: {
+                en: "Your best Texas Holdem hands will be made by using your hole cards and the five cards in the middle to make the best possible five card poker hand.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE6: {
+                en: "Not sure what the best Texas Holdem poker hands are? You can visit the poker hand rankings page for more information!",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE7: {
+                en: "There are two ways a hand can end. One is when the players in a hand turn over their hole cards and the player with the best hand wins. This is known as a showdown. The other is that someone will bet enough that everyone else folds. This is how most hands end in Texas Hold'em and that's the magic of the game – you don't always need the best hand to win.",
                 iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
             },
             CLOSE: {

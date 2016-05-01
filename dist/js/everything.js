@@ -55,7 +55,7 @@ var Pot = (function () {
     function Pot() {
         this.currentPotBetAmount = 0;
         this.totalAmount = 0;
-        this.hands = ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-"];
+        this.hands = ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"];
         this.handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
         this.playersInvolved = [];
         this.playersContributions = [];
@@ -111,27 +111,34 @@ var Pot = (function () {
         var winningList = [];
         var winningListCards;
         var winningScoreAndCardsObject;
+        var winningCategory = "";
         for (var i = 0; i < this.playersInvolved.length; i++) {
             var theSevenCardString = this.playersInvolved[i].convertPlayerCardArrayToString() + tableCardsString;
             winningScoreAndCardsObject = gameLogic.rankHand(theSevenCardString);
             var currentHandRank = this.handRanks[winningScoreAndCardsObject.index];
             var thisPlayersBestCards = [];
+            this.playersInvolved[i].winningCards = this.getCurrentplayersBestCards(theSevenCardString, winningScoreAndCardsObject);
+            console.log(currentHandRank + "Before: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log("Player " + this.playersInvolved[i].id + ": " + this.playersInvolved[i].winningCategory);
+            this.playersInvolved[i].winningCategory = this.hands[this.handRanks[currentHandRank]];
+            console.log(currentHandRank + "After: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log("Player " + this.playersInvolved[i].id + ": " + this.playersInvolved[i].winningCategory);
             if (currentHandRank > bestRank) {
                 bestRank = currentHandRank;
                 winningList = [];
                 winningList.push(this.playersInvolved[i]);
                 winningListCards = [];
+                winningCategory = this.playersInvolved[i].winningCategory;
                 winningListCards.push(winningScoreAndCardsObject.wci);
             }
             else if (currentHandRank == bestRank) {
                 winningList.push(this.playersInvolved[i]);
                 winningListCards.push(winningScoreAndCardsObject.wci);
             }
-            this.playersInvolved[i].winningCards = this.getCurrentplayersBestCards(theSevenCardString, winningScoreAndCardsObject);
-            this.playersInvolved[i].winningCategory = this.hands[this.handRanks[currentHandRank]];
         }
         if (winningList.length > 1) {
-            winningList = gameLogic.resolveEqualHandsConflict(tableAfterMove.openedCards, winningList, winningListCards, this.hands[this.handRanks.indexOf(bestRank)]);
+            console.log("Clash in: " + this.hands[this.handRanks.indexOf(bestRank)]);
+            winningList = gameLogic.resolveEqualHandsConflict(tableAfterMove.openedCards, winningList, winningListCards, winningCategory);
         }
         return winningList;
     };
@@ -1002,7 +1009,7 @@ var gameLogic;
     gameLogic.canAllInOrNot = canAllInOrNot;
     function rankHand(str) {
         //takes a string of per person hands and returns the rank as a number
-        var hands = ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-"];
+        var hands = ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"];
         var handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
         var index = 10; //index into handRanks
         var winCardIndexes, i;
@@ -1157,6 +1164,13 @@ var gameLogic;
                     currentPlayerWinningCards[i].push(tableCards[winningCardsList[i][j] - 2]);
                 }
             }
+        }
+        for (var i = 0; i < playerWithConflicts.length; i++) {
+            console.log("Before: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            console.log("Player " + playerWithConflicts[i].id + ": " + playerWithConflicts[i].winningCategory);
+            playerWithConflicts[i].winningCategory = conflictType;
+            console.log("After: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            console.log("Player " + playerWithConflicts[i].id + ": " + playerWithConflicts[i].winningCategory);
         }
         switch (conflictType) {
             case "4 of a Kind":
@@ -1544,46 +1558,13 @@ var gameLogic;
     }
     gameLogic.sortNumber = sortNumber;
     function forSimpleTestHtml() {
-        var move = gameLogic.createMove(null, null, 0, 0);
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Call;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        //move.stateAfterMove.table.playerList[0].chipsInPocket = 0;
-        //move.stateAfterMove.table.playerList[0].chipsInPocket = 0;
-        console.log(move.stateAfterMove);
-        /**
-                var move = gameLogic.createMove(null, null, 0, 0);
-                
-                move.stateAfterMove.table.playerList[0].chipsInPocket = 190;
-                move.stateAfterMove.table.playerList[1].chipsInPocket = 300;
-                        
-                move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-                
-                move.stateAfterMove.table.playerList[0].state = PlayerState.AllIn;
-                move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-                console.log(move.stateAfterMove);
-        
-                move.stateAfterMove.table.playerList[1].state = PlayerState.AllIn;
-                move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-                
-                move.stateAfterMove.table.playerList[0].chipsInPocket = 0;
-                console.log(move.stateAfterMove);
-        */
+        var hands = ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"];
+        var handRanks = [8, 9, 5, 6, 1, 2, 3, 10, 4, 7, 0];
+        var str = "10c Jc 7s Ac 7c 10h 7d";
+        var winningScoreAndCardsObject = gameLogic.rankHand(str);
+        var currentHandRank = handRanks[winningScoreAndCardsObject.index];
+        console.log(str);
+        console.log(hands[handRanks[currentHandRank]]);
     }
     gameLogic.forSimpleTestHtml = forSimpleTestHtml;
 })(gameLogic || (gameLogic = {}));
@@ -1642,15 +1623,35 @@ var game;
     function getTranslations() {
         return {
             RULES_OF_TICTACTOE: {
-                en: "Rules of Poker",
+                en: "Rules of Texas HoldEm Poker",
                 iw: "חוקי המשחק",
             },
             RULES_SLIDE1: {
-                en: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
+                en: "Every player (2-5) is dealt two cards face down – these are called your 'hole cards'. Then there is a round of betting where you can Check, Bet or Fold. This stage of the game is known as pre-flop",
                 iw: "אתה והיריב מסמנים איקס או עיגול כל תור",
             },
             RULES_SLIDE2: {
-                en: "The first to mark a whole row, column or diagonal wins.",
+                en: "When all the betting has finished three shared cards are dealt face up in the middle of the table. This is called the flop.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE3: {
+                en: "After this there is another round of betting, then a fourth shared card – called the turn – is dealt.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE4: {
+                en: "There is another round of betting then a final shared card – called the river – and a final round of betting.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE5: {
+                en: "Your best Texas Holdem hands will be made by using your hole cards and the five cards in the middle to make the best possible five card poker hand.",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE6: {
+                en: "Not sure what the best Texas Holdem poker hands are? You can visit the poker hand rankings page for more information!",
+                iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+            },
+            RULES_SLIDE7: {
+                en: "There are two ways a hand can end. One is when the players in a hand turn over their hole cards and the player with the best hand wins. This is known as a showdown. The other is that someone will bet enough that everyone else folds. This is how most hands end in Texas Hold'em and that's the magic of the game – you don't always need the best hand to win.",
                 iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
             },
             CLOSE: {

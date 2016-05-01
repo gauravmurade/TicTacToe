@@ -63,7 +63,7 @@ class Pot {
 	constructor () {
 		this.currentPotBetAmount = 0;
         this.totalAmount = 0;
-        this.hands =  ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-" ]; 
+        this.hands =  ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"]; 
         this.handRanks = [8,9,5,6,1,2,3,10,4,7,0];
         this.playersInvolved = [];
         this.playersContributions = [];
@@ -131,6 +131,7 @@ class Pot {
         let winningList: Player[] = [];
         let winningListCards : number[][];                    
         let winningScoreAndCardsObject: winningScoreAndCards;
+        let winningCategory: string = "";
         
         for(let i: number = 0; i<this.playersInvolved.length; i++) {
             let theSevenCardString: string = this.playersInvolved[i].convertPlayerCardArrayToString() + tableCardsString;
@@ -138,11 +139,20 @@ class Pot {
             let currentHandRank: number = this.handRanks[winningScoreAndCardsObject.index];
             let thisPlayersBestCards: Card[] = [];
             
+            this.playersInvolved[i].winningCards = this.getCurrentplayersBestCards(theSevenCardString, winningScoreAndCardsObject);
+            
+            console.log(currentHandRank + "Before: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log("Player " + this.playersInvolved[i].id + ": " + this.playersInvolved[i].winningCategory);
+            this.playersInvolved[i].winningCategory = this.hands[this.handRanks[currentHandRank]];
+            console.log(currentHandRank + "After: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log("Player " + this.playersInvolved[i].id + ": " + this.playersInvolved[i].winningCategory);
+            
             if(currentHandRank > bestRank) {
                 bestRank = currentHandRank;
                 winningList = [];
                 winningList.push(this.playersInvolved[i]);
                 winningListCards = [];
+                winningCategory = this.playersInvolved[i].winningCategory;
                 winningListCards.push(winningScoreAndCardsObject.wci);
             }
             else
@@ -150,13 +160,11 @@ class Pot {
                 winningList.push(this.playersInvolved[i]);
                 winningListCards.push(winningScoreAndCardsObject.wci);
             }
-            
-            this.playersInvolved[i].winningCards = this.getCurrentplayersBestCards(theSevenCardString, winningScoreAndCardsObject);
-            this.playersInvolved[i].winningCategory = this.hands[this.handRanks[currentHandRank]];
         }
         
         if(winningList.length > 1) {
-            winningList = gameLogic.resolveEqualHandsConflict(tableAfterMove.openedCards ,winningList, winningListCards, this.hands[this.handRanks.indexOf(bestRank)]);
+            console.log("Clash in: " + this.hands[this.handRanks.indexOf(bestRank)]);
+            winningList = gameLogic.resolveEqualHandsConflict(tableAfterMove.openedCards ,winningList, winningListCards, winningCategory);
         }   
         return winningList;
     }
@@ -1135,7 +1143,7 @@ module gameLogic {
     }
     
     
-export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
+    export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
         if(tableAfterMove.getCumulativePotAmount() == 0) {
             return true;
         }
@@ -1238,7 +1246,7 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
     export function rankHand(str: string) :winningScoreAndCards {
         
         //takes a string of per person hands and returns the rank as a number
-        let hands: string[] =  ["4 of a Kind", "Straight Flush", "Straight", "Flush", "High Card", "1 Pair", "2 Pair", "Royal Flush", "3 of a Kind", "Full House", "-Invalid-" ];
+        let hands: string[] =  ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"]; 
         let handRanks: number[] = [8,9,5,6,1,2,3,10,4,7,0];
         let index: number = 10;//index into handRanks
         let winCardIndexes:number, i:number;
@@ -1327,7 +1335,6 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
             let winningScoreAndCardsObject: winningScoreAndCards = new winningScoreAndCards();
             winningScoreAndCardsObject.index = index;
             winningScoreAndCardsObject.wci = wci;
-            
             return winningScoreAndCardsObject;
         }
     }
@@ -1423,6 +1430,14 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
                     currentPlayerWinningCards[i].push(tableCards[winningCardsList[i][j]-2]);
                 }
             }
+        }
+        
+        for(let i: number = 0; i < playerWithConflicts.length; i++) {
+            console.log("Before: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            console.log("Player " + playerWithConflicts[i].id + ": " + playerWithConflicts[i].winningCategory);
+            playerWithConflicts[i].winningCategory = conflictType;
+            console.log("After: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            console.log("Player " + playerWithConflicts[i].id + ": " + playerWithConflicts[i].winningCategory);
         }
         
         switch(conflictType) {
@@ -1855,59 +1870,14 @@ export function canSmallBlindOrNot(tableAfterMove : Table) :boolean{
     }
 
     export function forSimpleTestHtml() {
-
-        var move = gameLogic.createMove(null, null, 0, 0);
-        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Call;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[0].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[1].state = PlayerState.Check;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        //move.stateAfterMove.table.playerList[0].chipsInPocket = 0;
-        //move.stateAfterMove.table.playerList[0].chipsInPocket = 0;
-        
-        console.log(move.stateAfterMove);
-
-/**        
-        var move = gameLogic.createMove(null, null, 0, 0);
-        
-        move.stateAfterMove.table.playerList[0].chipsInPocket = 190;
-        move.stateAfterMove.table.playerList[1].chipsInPocket = 300;
-                
-        move = gameLogic.createMove(move.stateAfterMove, null, 0, move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[0].state = PlayerState.AllIn;
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-
-        console.log(move.stateAfterMove);
-
-        move.stateAfterMove.table.playerList[1].state = PlayerState.AllIn;        
-        move = gameLogic.createMove(move.stateAfterMove, null, 0,  move.turnIndexAfterMove);
-        
-        move.stateAfterMove.table.playerList[0].chipsInPocket = 0;
-        console.log(move.stateAfterMove);
-*/
+        let hands: string[] =  ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"]; 
+        let handRanks: number[] = [8,9,5,6,1,2,3,10,4,7,0];
+            
+        let str: string = "10c Jc 7s Ac 7c 10h 7d"; 
+        let winningScoreAndCardsObject: winningScoreAndCards = gameLogic.rankHand(str);
+        let currentHandRank: number = handRanks[winningScoreAndCardsObject.index];
+        console.log(str);
+        console.log(hands[handRanks[currentHandRank]]);
     }
 
 }
