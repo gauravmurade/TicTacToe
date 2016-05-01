@@ -253,31 +253,31 @@
   <div style="position:absolute; top:90%; left:0; width:100%; height:10%; font-size: 1vmax;">
     <div ng-if = "game.shouldShowButton('Small')"
         style="position:absolute; top:0; left:10%; width:10%; height:35%;"
-        class="card"
+        class="button"
         ng-click="game.cellClicked('Small',0)">
     <p>Small</p>
     </div>
     <div  ng-if = "game.shouldShowButton('Fold')"
         style="position:absolute; top:40%; left:10%; width:10%; height:40%;"
-        class="card"
+        class="button"
         ng-click="game.cellClicked('Fold',0)">
         <p>Fold</p>
     </div>
     <div ng-if = "game.shouldShowButton('Big')" 
         style="position:absolute; top:0; left:25%; width:10%; height:35%;"
-        class="card"
+        class="button"
         ng-click="game.cellClicked('Big',0)">
         <p>Big</p>
     </div>
     <div ng-if = "game.shouldShowButton('Call')" 
         style="position:absolute; top:40%; left:25%; width:10%; height:40%;"
-        class="card"
+        class="button"
         ng-click="game.cellClicked('Call',0)">
         <p>Call</p>
     </div>
     <div ng-if = "game.shouldShowButton('Raise')" 
         style="position:absolute; top:40%; left:45%; width:10%; height:40%;"
-        class="card"
+        class="button"
         ng-click="game.raised()">
         <p>Raise</p>
     </div>
@@ -285,13 +285,13 @@
         style = "position:absolute; top:0; left:45%; width:10%; font-size: 1vmax;" value="10"/>
     <div ng-if = "game.shouldShowButton('Check')" 
         style="position:absolute; top:40%; left:65%; width:10%; height:40%;"
-        class="card"
+        class="button"
         ng-click="game.cellClicked('Check',0)">
         <p>Check</p>
     </div>
     <div ng-if = "game.shouldShowButton('AllIn')"
         style="position:absolute; top:40%; left:85%; width:10%; height:40%;"
-        class="card"
+        class="button"
         ng-click="game.cellClicked('AllIn',0)">
         <p>All In</p>
     </div>
