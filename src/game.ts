@@ -141,6 +141,7 @@ module game {
 
       let tempTable: Table = new TableSetup(params.playersInfo.length);
       let tempPlayerList: Player[] = [];
+      let tempInitialPlayerList: Player[] = [];
       let tempPotArray: Pot[] = [];
       let tempWinnersOfPreviousHand: Player[][] = [];
 
@@ -156,7 +157,16 @@ module game {
         tempPlayerList.push(newPlayer);
       }
 
-      for( let i: number = 0; i < params.move.stateAfterMove.table.potArray.length; i++) {
+      for( let j: number = 0; j < params.move.stateAfterMove.table.initialPlayerList.length; j++) {
+        for( let k: number = 0; k < tempPlayerList.length; k++) {
+          if(params.move.stateAfterMove.table.initialPlayerList[j].id == tempPlayerList[k].id) {          
+            tempInitialPlayerList.push(tempPlayerList[k]);
+            break;
+          }
+        }
+      }
+
+      for( let i: number = 0; params.move.stateAfterMove.table.potArray && (i < params.move.stateAfterMove.table.potArray.length); i++) {
         let newPot: Pot = new Pot();
         newPot.hands = params.move.stateAfterMove.table.potArray[i].hands;
         newPot.handRanks = params.move.stateAfterMove.table.potArray[i].handRanks;
@@ -164,7 +174,7 @@ module game {
         newPot.totalAmount = params.move.stateAfterMove.table.potArray[i].totalAmount;
 
         let tempPlayersInvolved: Player[] = [];
-        for( let j: number = 0; j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length; j++) {
+        for( let j: number = 0; params.move.stateAfterMove.table.potArray[i].playersInvolved && (j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length); j++) {
           for( let k: number = 0; k < tempPlayerList.length; k++) {
             if(params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id == tempPlayerList[k].id) {          
               tempPlayersInvolved.push(tempPlayerList[k]);
@@ -178,9 +188,9 @@ module game {
         tempPotArray.push(newPot);
       }      
 
-      for( let i: number = 0; i < params.move.stateAfterMove.table.winnersOfPreviousHand.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.table.winnersOfPreviousHand && (i < params.move.stateAfterMove.table.winnersOfPreviousHand.length); i++) {
         let tempWinnerOfPreviousHand: Player[] = []; 
-        for( let j: number = 0; j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length; j++) {
+        for( let j: number = 0; params.move.stateAfterMove.table.winnersOfPreviousHand[i] && (j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length); j++) {
           for( let k: number = 0; k < tempPlayerList.length; k++) {
             if(params.move.stateAfterMove.table.winnersOfPreviousHand[i][j].id == tempPlayerList[k].id) {          
               tempWinnerOfPreviousHand.push(tempPlayerList[k]);
@@ -192,6 +202,7 @@ module game {
       }
 
       tempTable.playerList = tempPlayerList;
+      tempTable.initialPlayerList = tempInitialPlayerList;
       tempTable.deck = params.move.stateAfterMove.table.deck;
       tempTable.openedCards = params.move.stateAfterMove.table.openedCards;
       tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
@@ -215,9 +226,9 @@ module game {
       }                
     
       let tempWinnersList: Player[][] = []
-      for( let i: number = 0; i < params.move.stateAfterMove.winnersList.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.winnersList && (i < params.move.stateAfterMove.winnersList.length); i++) {
         let tempWinnerList: Player[] = [];
-        for( let j: number = 0; j < params.move.stateAfterMove.winnersList[i].length; j++) {
+        for( let j: number = 0; params.move.stateAfterMove.winnersList[i] && (j < params.move.stateAfterMove.winnersList[i].length); j++) {
           for( let k: number = 0; k < tempPlayerList.length; k++) {
             if(params.move.stateAfterMove.winnersList[i][j].id == tempPlayerList[k].id) {          
               tempWinnerList.push(tempPlayerList[k]);
@@ -230,7 +241,7 @@ module game {
       params.move.stateAfterMove.winnersList = tempWinnersList;
 
       let tempPlayersAfterHandOver: Player[] = []
-      for( let i: number = 0; i < params.move.stateAfterMove.playersAfterHandOver.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.playersAfterHandOver && (i < params.move.stateAfterMove.playersAfterHandOver.length); i++) {
         for( let j: number = 0; j < tempPlayerList.length; j++) {
           if(params.move.stateAfterMove.playersAfterHandOver[i].id == tempPlayerList[j].id) {          
             tempPlayersAfterHandOver.push(tempPlayerList[j]);
@@ -300,7 +311,7 @@ module game {
       return;
     }
     try {
-        console.log("cellClicked STATE BEFORE MAKE MOVE: ",state);
+        console.log("cellClicked STATE BEFORE MAKE MOVE: ", state);
       //update the closedCards size
       oldOpenCardsSize = state.table.openedCards.length;
       

@@ -46,7 +46,6 @@ class Player {
         for( let i: number = 0; i < this.cards.length; i++) { 
             cardString = cardString + this.cards[i].cardNumber + CardSuite[this.cards[i].cardType] + " "; 
         }
-        //console.log("Hand Cards: " + cardString);
         return (cardString);
     }
 }
@@ -141,11 +140,7 @@ class Pot {
             
             this.playersInvolved[i].winningCards = this.getCurrentplayersBestCards(theSevenCardString, winningScoreAndCardsObject);
             
-            console.log(currentHandRank + "Before: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            console.log("Player " + this.playersInvolved[i].id + ": " + this.playersInvolved[i].winningCategory);
             this.playersInvolved[i].winningCategory = this.hands[this.handRanks[currentHandRank]];
-            console.log(currentHandRank + "After: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            console.log("Player " + this.playersInvolved[i].id + ": " + this.playersInvolved[i].winningCategory);
             
             if(currentHandRank > bestRank) {
                 bestRank = currentHandRank;
@@ -163,7 +158,6 @@ class Pot {
         }
         
         if(winningList.length > 1) {
-            console.log("Clash in: " + this.hands[this.handRanks.indexOf(bestRank)]);
             winningList = gameLogic.resolveEqualHandsConflict(tableAfterMove.openedCards ,winningList, winningListCards, winningCategory);
         }   
         return winningList;
@@ -226,6 +220,7 @@ class Pot {
 class TableSetup {
     
 	playerList : Player[];
+    initialPlayerList : Player[];
 	deck : Card[];
 	openedCards : Card[];
 	closedCards : Card[];
@@ -241,7 +236,8 @@ class TableSetup {
 
     constructor(noOfPlayers: number) {
         this.playerList = [];
-		this.deck = [];
+		this.initialPlayerList = [];
+        this.deck = [];
 		this.openedCards = [];
 		this.closedCards = [];
 		this.dealerIndex = noOfPlayers-1;
@@ -274,9 +270,6 @@ class TableSetup {
             }
             else if((this.playerList[this.currentPlayerIndex].state != PlayerState.Fold) && (this.playerList[this.currentPlayerIndex].state != PlayerState.AllIn)) {
                 return;
-            }
-            else {
-//                console.log('\n' + "Skipping player: " + this.playerList[this.currentPlayerIndex].name + '\n');
             }
         }
     }
@@ -321,12 +314,8 @@ class TableSetup {
     
         for(let i: number = 0; i<this.potArray.length; i++) {
             
-            console.log("\n\nPot Number: " + i);
-            
             let winningPlayers: Player[] = this.potArray[i].getWinners(this);
             
-            console.log("Final Winning Players:");
-            console.log(winningPlayers); 
             this.winnersOfPreviousHand.push(winningPlayers);
             
             let noOfWinners: number = winningPlayers.length;
@@ -365,7 +354,6 @@ class TableSetup {
                 break;
             }
             else {
-                //console.log('\n' + "Skipping player: " + this.playerList[this.currentPlayerIndex].name + '\n');
                 this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.playerList.length;
             }
         }
@@ -446,7 +434,6 @@ class TableSetup {
             cardString = cardString + this.openedCards[i].cardNumber + CardSuite[this.openedCards[i].cardType] + " "; 
         }
         
-        //console.log('\n' + "Table Cards: " + cardString.substring(0, cardString.length-1));
         return (cardString.substring(0, cardString.length-1));
     }
 }
@@ -549,13 +536,6 @@ function burnCard(cardDeck : Card[]) {
     cardDeck.pop()
 }
 
-
-function printCardDeck(cardDeck : Card[]) {
-	for (let i : number = 0; i < cardDeck.length; i++) {
-//        console.log(cardDeck[i].cardNumber + " of " + CardSuite[cardDeck[i].cardType]);
-    }
-}
-
 function isGameOver(table: Table): boolean {
 	if((table.playerList.length == 0) || (table.playerList.length == 1))  {
 		return true;
@@ -576,12 +556,13 @@ interface IState {
   delta: TableDelta;
   winnersList: Player[][];
   playersAfterHandOver: Player[];
+  GameWinner: Player;
 }
 
 module gameLogic {
   
      export function getInitialTable(playersInfo: IPlayerInfo[]): Table {
-
+         
        let table : Table = new TableSetup(playersInfo.length);
        for(let i: number = 0; i< playersInfo.length; i++) {
            table.addPlayerToTheTable(new Player(playersInfo[i].playerId,playersInfo[i].displayName));
@@ -597,16 +578,20 @@ module gameLogic {
 
         table.deck = initializeTableDeck();  
         distributeCards(table);
+        for(let i: number = 0; i < table.playerList.length; i++) {
+            let currentPlayer: Player = table.playerList[i];
+            table.initialPlayerList.push(currentPlayer);    
+        }
         return table;
     }
 
     export function getInitialState(playersInfo: IPlayerInfo[]): IState {
-        return {table: getInitialTable(playersInfo), delta: null, winnersList : [], playersAfterHandOver : []};
+        return {table: getInitialTable(playersInfo), delta: null, winnersList : [], playersAfterHandOver : [], GameWinner : null};
     } 
   
     export function createMove(
         stateBeforeMove: IState, currentPlayer: Player, amountAdded: number, turnIndexBeforeMove: number): IMove {   
-        let stateAfterMove1: IState = {table: null, delta: null, winnersList: [], playersAfterHandOver: []};
+        let stateAfterMove1: IState = {table: null, delta: null, winnersList: [], playersAfterHandOver: [], GameWinner: null};
         stateAfterMove1.winnersList = [];
         stateAfterMove1.playersAfterHandOver = [];
         
@@ -627,7 +612,7 @@ module gameLogic {
             playersInfo.push(player2);
             stateBeforeMove = getInitialState(playersInfo);
         }
-    
+
         let lastCardOfTheRound: boolean = false;
         let handOver: boolean = false;
         let table: Table = stateBeforeMove.table;
@@ -690,7 +675,7 @@ module gameLogic {
                                             
                                             if(foldCount == tableAfterMove.playerList.length - 1) {
                                                 
-                                                let stateAfterMove: IState = {delta: null, table: null, winnersList: null, playersAfterHandOver: null};
+                                                let stateAfterMove: IState = {delta: null, table: null, winnersList: null, playersAfterHandOver: null, GameWinner : null};
                                                 tableAfterMove.awardWinners(stateAfterMove);
                                                 stateAfterMove.playersAfterHandOver = null;
                                                 tableAfterMove.removePlayersWithInsufficientChips();
@@ -700,15 +685,11 @@ module gameLogic {
                             
                                                 if(tableAfterMove.playerList.length==0 || tableAfterMove.playerList.length==1) {
                                                     console.log("Game Over! Bye Bye! " + tableAfterMove.playerList.length + " Players left!");
+                                                    stateAfterMove.GameWinner = tableAfterMove.playerList[0];
                                                 }
                                                 
                                                 let turnIndexAfterMove: number = tableAfterMove.currentPlayerIndex;
                                                 let delta: TableDelta = {currentPlayer: currentPlayer, amountAdded: amountAdded};
-                                                
-                                                //let tempPlayerList: Player[] = [];
-                                                //tempPlayerList.push(currentPlayer);
-                                                //let winnersList: Player[][] = [];
-                                                //winnersList.push(tempPlayerList);
                                                 
                                                 stateAfterMove.delta = delta;
                                                 stateAfterMove.table = tableAfterMove;
@@ -726,7 +707,7 @@ module gameLogic {
                                                 
                                                 let turnIndexAfterMove: number = tableAfterMove.currentPlayerIndex;
                                                 let delta: TableDelta = {currentPlayer: currentPlayer, amountAdded: amountAdded};
-                                                let stateAfterMove: IState = {delta: delta, table: tableAfterMove, winnersList: [], playersAfterHandOver: tableAfterMove.playerList};
+                                                let stateAfterMove: IState = {delta: delta, table: tableAfterMove, winnersList: [], playersAfterHandOver: tableAfterMove.playerList, GameWinner : null};
                                                 let endMatchScores: number[];
                                                 endMatchScores = null;
                                                 return {endMatchScores:endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove};
@@ -945,8 +926,6 @@ module gameLogic {
         if((((tableAfterMove.currentPlayerIndex + 1) % tableAfterMove.playerList.length) == 
             tableAfterMove.roundStartIndex) && (currentPlayer.state != PlayerState.Init)) {
 
-            //adjustPots(tableAfterMove);
-            
             if(tableAfterMove.openedCards.length == 5) {
                 handOver = true;
             }
@@ -977,19 +956,44 @@ module gameLogic {
             }
             turnIndexAfterMove = tableAfterMove.currentPlayerIndex;
         }
-        //console.log("Pot After the Turn: ");
-        //console.log(tableAfterMove.potArray);
-        //console.log(tableAfterMove.playerList);
-        //console.log('\n');
         
         let delta: TableDelta = {currentPlayer: currentPlayer, amountAdded: amountAdded};
         stateAfterMove1.delta = delta;
         stateAfterMove1.table = tableAfterMove; 
         
+        let winner: Player = getWinner(tableAfterMove);
         let endMatchScores: number[];
-        endMatchScores = null;
         
+        if (winner !== null) {
+            // Game over.
+            turnIndexAfterMove = -1;
+            endMatchScores = [];
+                    
+            for(let j: number = 0; j < stateAfterMove1.table.initialPlayerList.length; j++) {
+                endMatchScores[j] = 0;
+                if(stateAfterMove1.table.initialPlayerList[j].id == winner.id) {
+                    endMatchScores[j] = 1;
+                }
+            }
+        } 
+        else {
+            // Game continues.
+            endMatchScores = null;
+        }
         return {endMatchScores:endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove1};
+    }
+
+    export function getWinner(tableAfterMove:Table) {
+        if(tableAfterMove.playerList.length > 1) {
+            return null;
+        }
+        else {
+            for(let i: number = 0; i<tableAfterMove.initialPlayerList.length; i++) {
+                if(tableAfterMove.initialPlayerList[i].id == tableAfterMove.playerList[0].id) {
+                    return tableAfterMove.initialPlayerList[i];
+                }
+            }
+        }
     }
 
     export function roundOver(tableAfterMove: TableSetup, stateAfterMove1 : IState) {
@@ -1035,6 +1039,7 @@ module gameLogic {
                                                         
                             if(tableAfterMove.playerList.length==0 || tableAfterMove.playerList.length==1) {
                                 console.log("Game Over! Bye Bye! " + tableAfterMove.playerList.length + " Players left!");
+                                stateAfterMove1.GameWinner = tableAfterMove.playerList[0];
                             }
                         }
             }
@@ -1323,14 +1328,10 @@ module gameLogic {
                                 }
                             }
                         }
-                        // console.log("Final Winning hand: ");
-                        // console.log(wci); 
                         index = winIndex; 
                     }                    
                 }  
             }
-            // console.log("Hand: " + handRanks[index]);
-            // console.log("Hand Name: "  + hands[index]);
             
             let winningScoreAndCardsObject: winningScoreAndCards = new winningScoreAndCards();
             winningScoreAndCardsObject.index = index;
@@ -1433,11 +1434,7 @@ module gameLogic {
         }
         
         for(let i: number = 0; i < playerWithConflicts.length; i++) {
-            console.log("Before: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-            console.log("Player " + playerWithConflicts[i].id + ": " + playerWithConflicts[i].winningCategory);
             playerWithConflicts[i].winningCategory = conflictType;
-            console.log("After: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-            console.log("Player " + playerWithConflicts[i].id + ": " + playerWithConflicts[i].winningCategory);
         }
         
         switch(conflictType) {
@@ -1870,14 +1867,6 @@ module gameLogic {
     }
 
     export function forSimpleTestHtml() {
-        let hands: string[] =  ["Royal Flush", "3 of a Kind", "Straight", "Flush", "4 of a Kind", "1 Pair", "2 Pair", "Straight Flush", "-Invalid-", "High Card", "Full House"]; 
-        let handRanks: number[] = [8,9,5,6,1,2,3,10,4,7,0];
-            
-        let str: string = "10c Jc 7s Ac 7c 10h 7d"; 
-        let winningScoreAndCardsObject: winningScoreAndCards = gameLogic.rankHand(str);
-        let currentHandRank: number = handRanks[winningScoreAndCardsObject.index];
-        console.log(str);
-        console.log(hands[handRanks[currentHandRank]]);
     }
 
 }

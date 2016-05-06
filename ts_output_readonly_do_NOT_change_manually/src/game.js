@@ -121,6 +121,7 @@ var game;
             // ******************************************************************************************** //
             var tempTable = new TableSetup(params.playersInfo.length);
             var tempPlayerList = [];
+            var tempInitialPlayerList = [];
             var tempPotArray = [];
             var tempWinnersOfPreviousHand = [];
             for (var i = 0; i < params.move.stateAfterMove.table.playerList.length; i++) {
@@ -133,14 +134,22 @@ var game;
                 newPlayer.winningCategory = params.move.stateAfterMove.table.playerList[i].winningCategory;
                 tempPlayerList.push(newPlayer);
             }
-            for (var i = 0; i < params.move.stateAfterMove.table.potArray.length; i++) {
+            for (var j = 0; j < params.move.stateAfterMove.table.initialPlayerList.length; j++) {
+                for (var k = 0; k < tempPlayerList.length; k++) {
+                    if (params.move.stateAfterMove.table.initialPlayerList[j].id == tempPlayerList[k].id) {
+                        tempInitialPlayerList.push(tempPlayerList[k]);
+                        break;
+                    }
+                }
+            }
+            for (var i = 0; params.move.stateAfterMove.table.potArray && (i < params.move.stateAfterMove.table.potArray.length); i++) {
                 var newPot = new Pot();
                 newPot.hands = params.move.stateAfterMove.table.potArray[i].hands;
                 newPot.handRanks = params.move.stateAfterMove.table.potArray[i].handRanks;
                 newPot.currentPotBetAmount = params.move.stateAfterMove.table.potArray[i].currentPotBetAmount;
                 newPot.totalAmount = params.move.stateAfterMove.table.potArray[i].totalAmount;
                 var tempPlayersInvolved = [];
-                for (var j = 0; j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length; j++) {
+                for (var j = 0; params.move.stateAfterMove.table.potArray[i].playersInvolved && (j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length); j++) {
                     for (var k = 0; k < tempPlayerList.length; k++) {
                         if (params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id == tempPlayerList[k].id) {
                             tempPlayersInvolved.push(tempPlayerList[k]);
@@ -152,9 +161,9 @@ var game;
                 newPot.playersContributions = params.move.stateAfterMove.table.potArray[i].playersContributions;
                 tempPotArray.push(newPot);
             }
-            for (var i = 0; i < params.move.stateAfterMove.table.winnersOfPreviousHand.length; i++) {
+            for (var i = 0; params.move.stateAfterMove.table.winnersOfPreviousHand && (i < params.move.stateAfterMove.table.winnersOfPreviousHand.length); i++) {
                 var tempWinnerOfPreviousHand = [];
-                for (var j = 0; j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length; j++) {
+                for (var j = 0; params.move.stateAfterMove.table.winnersOfPreviousHand[i] && (j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length); j++) {
                     for (var k = 0; k < tempPlayerList.length; k++) {
                         if (params.move.stateAfterMove.table.winnersOfPreviousHand[i][j].id == tempPlayerList[k].id) {
                             tempWinnerOfPreviousHand.push(tempPlayerList[k]);
@@ -165,6 +174,7 @@ var game;
                 tempWinnersOfPreviousHand.push(tempWinnerOfPreviousHand);
             }
             tempTable.playerList = tempPlayerList;
+            tempTable.initialPlayerList = tempInitialPlayerList;
             tempTable.deck = params.move.stateAfterMove.table.deck;
             tempTable.openedCards = params.move.stateAfterMove.table.openedCards;
             tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
@@ -185,9 +195,9 @@ var game;
                 }
             }
             var tempWinnersList = [];
-            for (var i = 0; i < params.move.stateAfterMove.winnersList.length; i++) {
+            for (var i = 0; params.move.stateAfterMove.winnersList && (i < params.move.stateAfterMove.winnersList.length); i++) {
                 var tempWinnerList = [];
-                for (var j = 0; j < params.move.stateAfterMove.winnersList[i].length; j++) {
+                for (var j = 0; params.move.stateAfterMove.winnersList[i] && (j < params.move.stateAfterMove.winnersList[i].length); j++) {
                     for (var k = 0; k < tempPlayerList.length; k++) {
                         if (params.move.stateAfterMove.winnersList[i][j].id == tempPlayerList[k].id) {
                             tempWinnerList.push(tempPlayerList[k]);
@@ -199,7 +209,7 @@ var game;
             }
             params.move.stateAfterMove.winnersList = tempWinnersList;
             var tempPlayersAfterHandOver = [];
-            for (var i = 0; i < params.move.stateAfterMove.playersAfterHandOver.length; i++) {
+            for (var i = 0; params.move.stateAfterMove.playersAfterHandOver && (i < params.move.stateAfterMove.playersAfterHandOver.length); i++) {
                 for (var j = 0; j < tempPlayerList.length; j++) {
                     if (params.move.stateAfterMove.playersAfterHandOver[i].id == tempPlayerList[j].id) {
                         tempPlayersAfterHandOver.push(tempPlayerList[j]);
