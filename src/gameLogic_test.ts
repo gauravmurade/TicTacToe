@@ -2809,6 +2809,4 @@ it("Small Blind; Big Blind; AllIn; AllIn", function() {
         
         expectMove(OK, P1_TURN, tableBeforeMove, player3, 0, tableAfterMove, P1_TURN, NO_ONE_WINS, false, null, allWinners, player4);
     });
-}) 
-
-
+})
