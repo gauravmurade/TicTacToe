@@ -66,15 +66,35 @@ module game {
   function getTranslations(): Translations {
     return {
       RULES_OF_TICTACTOE: {
-        en: "Rules of Poker",
+        en: "Rules of Texas HoldEm Poker",
         iw: "חוקי המשחק",
       },
       RULES_SLIDE1: {
-        en: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
+        en: "Every player (2-5) is dealt two cards face down – these are called your 'hole cards'. Then there is a round of betting where you can Check, Bet or Fold. This stage of the game is known as pre-flop",
         iw: "אתה והיריב מסמנים איקס או עיגול כל תור",
       },
       RULES_SLIDE2: {
-        en: "The first to mark a whole row, column or diagonal wins.",
+        en: "When all the betting has finished three shared cards are dealt face up in the middle of the table. This is called the flop.",
+        iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+      },
+      RULES_SLIDE3: {
+        en: "After this there is another round of betting, then a fourth shared card – called the turn – is dealt.",
+        iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+      },
+      RULES_SLIDE4: {
+        en: "There is another round of betting then a final shared card – called the river – and a final round of betting.",
+        iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+      },
+      RULES_SLIDE5: {
+        en: "Your best Texas Holdem hands will be made by using your hole cards and the five cards in the middle to make the best possible five card poker hand.",
+        iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+      },
+      RULES_SLIDE6: {
+        en: "Not sure what the best Texas Holdem poker hands are? You can visit the poker hand rankings page for more information!",
+        iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
+      },
+      RULES_SLIDE7: {
+        en: "There are two ways a hand can end. One is when the players in a hand turn over their hole cards and the player with the best hand wins. This is known as a showdown. The other is that someone will bet enough that everyone else folds. This is how most hands end in Texas Hold'em and that's the magic of the game – you don't always need the best hand to win.",
         iw: "הראשון שמסמן שורה, עמודה או אלכסון מנצח",
       },
       CLOSE:  {
@@ -121,6 +141,7 @@ module game {
 
       let tempTable: Table = new TableSetup(params.playersInfo.length);
       let tempPlayerList: Player[] = [];
+      let tempInitialPlayerList: Player[] = [];
       let tempPotArray: Pot[] = [];
       let tempWinnersOfPreviousHand: Player[][] = [];
 
@@ -136,7 +157,16 @@ module game {
         tempPlayerList.push(newPlayer);
       }
 
-      for( let i: number = 0; i < params.move.stateAfterMove.table.potArray.length; i++) {
+      for( let j: number = 0; j < params.move.stateAfterMove.table.initialPlayerList.length; j++) {
+        for( let k: number = 0; k < tempPlayerList.length; k++) {
+          if(params.move.stateAfterMove.table.initialPlayerList[j].id == tempPlayerList[k].id) {          
+            tempInitialPlayerList.push(tempPlayerList[k]);
+            break;
+          }
+        }
+      }
+
+      for( let i: number = 0; params.move.stateAfterMove.table.potArray && (i < params.move.stateAfterMove.table.potArray.length); i++) {
         let newPot: Pot = new Pot();
         newPot.hands = params.move.stateAfterMove.table.potArray[i].hands;
         newPot.handRanks = params.move.stateAfterMove.table.potArray[i].handRanks;
@@ -144,7 +174,7 @@ module game {
         newPot.totalAmount = params.move.stateAfterMove.table.potArray[i].totalAmount;
 
         let tempPlayersInvolved: Player[] = [];
-        for( let j: number = 0; j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length; j++) {
+        for( let j: number = 0; params.move.stateAfterMove.table.potArray[i].playersInvolved && (j < params.move.stateAfterMove.table.potArray[i].playersInvolved.length); j++) {
           for( let k: number = 0; k < tempPlayerList.length; k++) {
             if(params.move.stateAfterMove.table.potArray[i].playersInvolved[j].id == tempPlayerList[k].id) {          
               tempPlayersInvolved.push(tempPlayerList[k]);
@@ -158,9 +188,9 @@ module game {
         tempPotArray.push(newPot);
       }      
 
-      for( let i: number = 0; i < params.move.stateAfterMove.table.winnersOfPreviousHand.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.table.winnersOfPreviousHand && (i < params.move.stateAfterMove.table.winnersOfPreviousHand.length); i++) {
         let tempWinnerOfPreviousHand: Player[] = []; 
-        for( let j: number = 0; j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length; j++) {
+        for( let j: number = 0; params.move.stateAfterMove.table.winnersOfPreviousHand[i] && (j < params.move.stateAfterMove.table.winnersOfPreviousHand[i].length); j++) {
           for( let k: number = 0; k < tempPlayerList.length; k++) {
             if(params.move.stateAfterMove.table.winnersOfPreviousHand[i][j].id == tempPlayerList[k].id) {          
               tempWinnerOfPreviousHand.push(tempPlayerList[k]);
@@ -172,6 +202,7 @@ module game {
       }
 
       tempTable.playerList = tempPlayerList;
+      tempTable.initialPlayerList = tempInitialPlayerList;
       tempTable.deck = params.move.stateAfterMove.table.deck;
       tempTable.openedCards = params.move.stateAfterMove.table.openedCards;
       tempTable.closedCards = params.move.stateAfterMove.table.closedCards;
@@ -195,9 +226,9 @@ module game {
       }                
     
       let tempWinnersList: Player[][] = []
-      for( let i: number = 0; i < params.move.stateAfterMove.winnersList.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.winnersList && (i < params.move.stateAfterMove.winnersList.length); i++) {
         let tempWinnerList: Player[] = [];
-        for( let j: number = 0; j < params.move.stateAfterMove.winnersList[i].length; j++) {
+        for( let j: number = 0; params.move.stateAfterMove.winnersList[i] && (j < params.move.stateAfterMove.winnersList[i].length); j++) {
           for( let k: number = 0; k < tempPlayerList.length; k++) {
             if(params.move.stateAfterMove.winnersList[i][j].id == tempPlayerList[k].id) {          
               tempWinnerList.push(tempPlayerList[k]);
@@ -210,7 +241,7 @@ module game {
       params.move.stateAfterMove.winnersList = tempWinnersList;
 
       let tempPlayersAfterHandOver: Player[] = []
-      for( let i: number = 0; i < params.move.stateAfterMove.playersAfterHandOver.length; i++) {
+      for( let i: number = 0; params.move.stateAfterMove.playersAfterHandOver && (i < params.move.stateAfterMove.playersAfterHandOver.length); i++) {
         for( let j: number = 0; j < tempPlayerList.length; j++) {
           if(params.move.stateAfterMove.playersAfterHandOver[i].id == tempPlayerList[j].id) {          
             tempPlayersAfterHandOver.push(tempPlayerList[j]);
@@ -280,7 +311,7 @@ module game {
       return;
     }
     try {
-        console.log("cellClicked STATE BEFORE MAKE MOVE: ",state);
+        console.log("cellClicked STATE BEFORE MAKE MOVE: ", state);
       //update the closedCards size
       oldOpenCardsSize = state.table.openedCards.length;
       
@@ -301,11 +332,9 @@ module game {
     let cell = state.board[row][col];
     return cell !== "";
   }
-
   export function isPieceX(row: number, col: number): boolean {
     return state.board[row][col] === 'X';
   }
-
   export function isPieceO(row: number, col: number): boolean {
     return state.board[row][col] === 'O';
   }*/
